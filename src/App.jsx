@@ -17,6 +17,7 @@ import TestimonialsSection from './components/TestimonialsSection';
 
 import { BRAND_DETAILS } from './data/products';
 import { DB } from './services/db';
+import { MapPin, Mail, Phone, ExternalLink } from 'lucide-react';
 import './styles/theme.css';
 
 export default function App() {
@@ -24,21 +25,26 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('home'); // 'home' | 'collections' | 'story' | 'contact' | 'admin' | 'customer-dashboard'
   const [searchQuery, setSearchQuery] = useState('');
 
-
   // Customer Account & Admin Auth State
   const [currentUser, setCurrentUser] = useState(() => DB.getCurrentSessionCustomer());
   const [isCustomerLoginOpen, setIsCustomerLoginOpen] = useState(false);
+  const [loginModalMode, setLoginModalMode] = useState('login');
 
   // Core Persistent Data States
   const [products, setProducts] = useState(() => DB.getProducts());
   const [cartItems, setCartItems] = useState([]);
   const [orders, setOrders] = useState(() => DB.getOrders());
+  const [wishlistIds, setWishlistIds] = useState(() => DB.getWishlist());
 
   const handleLogoutCustomer = () => {
     DB.setCurrentSessionCustomer(null);
     setCurrentUser(null);
   };
 
+  const handleToggleWishlist = (product) => {
+    const updated = DB.toggleWishlist(product.id, product.name);
+    setWishlistIds(updated);
+  };
 
   useEffect(() => {
     // Check if direct admin URL parameter exists e.g. ?admin=true or #admin
@@ -67,6 +73,7 @@ export default function App() {
 
   // Cart Handlers
   const handleAddToCart = (product, size = 'M', qty = 1) => {
+    DB.logActivity('cart', `Added "${product.name}" (Size: ${size}) to Bag`, 'bag');
     setCartItems(prev => {
       const existingIndex = prev.findIndex(item => item.id === product.id && item.selectedSize === size);
       if (existingIndex > -1) {
@@ -111,13 +118,17 @@ export default function App() {
       {activeTab !== 'admin' && (
         <Header 
           cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+          wishlistCount={wishlistIds.length}
           onOpenCart={() => setIsCartOpen(true)}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           currentUser={currentUser}
-          onOpenCustomerLogin={() => setIsCustomerLoginOpen(true)}
+          onOpenCustomerLogin={(mode = 'login') => {
+            setLoginModalMode(mode);
+            setIsCustomerLoginOpen(true);
+          }}
           onLogoutCustomer={handleLogoutCustomer}
         />
       )}
@@ -131,6 +142,9 @@ export default function App() {
             setProducts={setProducts}
             orders={orders}
             setOrders={setOrders}
+            wishlistIds={wishlistIds}
+            cartItems={cartItems}
+            currentUser={currentUser}
             onExitAdmin={() => setActiveTab('home')}
           />
         ) : (
@@ -153,6 +167,8 @@ export default function App() {
                   onQuickAdd={(p) => handleAddToCart(p, 'M', 1)}
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
+                  wishlistIds={wishlistIds}
+                  onToggleWishlist={handleToggleWishlist}
                 />
                 <TestimonialsSection />
                 <Story />
@@ -182,6 +198,8 @@ export default function App() {
                   onQuickAdd={(p) => handleAddToCart(p, 'M', 1)}
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
+                  wishlistIds={wishlistIds}
+                  onToggleWishlist={handleToggleWishlist}
                 />
               </>
             )}
@@ -241,37 +259,88 @@ export default function App() {
 
               <div>
                 <h4 style={{ fontSize: '1rem', color: '#FFF', marginBottom: '12px' }}>Contact & Connect</h4>
-                <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.8)', marginBottom: '6px' }}>Instagram: <strong>{BRAND_DETAILS.instagram}</strong></p>
-                <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.8)' }}>Email: hello@yumidxb.com</p>
-                <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', marginTop: '8px' }}>Pan-India Express Doorstep Shipping</p>
+                <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.8)', marginBottom: '6px' }}>Email: hello@yumidxb.com</p>
+                <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', marginBottom: '16px' }}>Pan-India & Global Express Doorstep Shipping</p>
+
+                {/* Social & Google Maps Icons */}
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  {/* Instagram Icon */}
+                  <a 
+                    href="https://instagram.com/yumi_dxb" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    title="Instagram - @yumi_dxb"
+                    style={{
+                      width: '38px', height: '38px', borderRadius: '50%',
+                      backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFF',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.2s', textDecoration: 'none'
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C97B7B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                  </a>
+
+                  {/* Facebook Icon */}
+                  <a 
+                    href="https://facebook.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    title="Facebook Page - YUMI DXB"
+                    style={{
+                      width: '38px', height: '38px', borderRadius: '50%',
+                      backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFF',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.2s', textDecoration: 'none'
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1877F2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                    </svg>
+                  </a>
+
+                  {/* Google Maps Icon */}
+                  <a 
+                    href="https://maps.google.com/?q=Dubai+Fashion+Avenue" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    title="Google Maps Store Location"
+                    style={{
+                      width: '38px', height: '38px', borderRadius: '50%',
+                      backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFF',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.2s', textDecoration: 'none'
+                    }}
+                  >
+                    <MapPin size={18} color="#EA4335" />
+                  </a>
+                </div>
               </div>
 
             </div>
 
-            <div style={{ textAlign: 'center', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ textAlign: 'center', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <div>© 2024 - 2026 {BRAND_DETAILS.name}. All rights reserved.</div>
-              {/* Separate Store Owner / Admin Portal Access */}
-              <button 
-                onClick={() => setActiveTab('admin')}
-                style={{
-                  background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem',
-                  cursor: 'pointer', textDecoration: 'underline'
-                }}
-              >
-                Store Staff & Admin Portal 🔒
-              </button>
             </div>
           </div>
         </footer>
       )}
 
-      {/* CUSTOMER LOGIN MODAL */}
+      {/* UNIFIED LOGIN & AUTH MODAL */}
       <CustomerLoginModal 
         isOpen={isCustomerLoginOpen}
+        initialMode={loginModalMode}
         onClose={() => setIsCustomerLoginOpen(false)}
         onLoginSuccess={(user) => {
           setCurrentUser(user);
-          setActiveTab('customer-dashboard');
+          if (user?.role === 'admin') {
+            setActiveTab('admin');
+          } else {
+            setActiveTab('customer-dashboard');
+          }
         }}
       />
 
@@ -282,6 +351,8 @@ export default function App() {
           product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
           onAddToCart={handleAddToCart}
+          wishlistIds={wishlistIds}
+          onToggleWishlist={handleToggleWishlist}
         />
       )}
 

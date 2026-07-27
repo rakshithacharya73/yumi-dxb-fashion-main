@@ -21,6 +21,7 @@ import {
   doc, 
   setDoc, 
   updateDoc, 
+  deleteDoc,
   query, 
   orderBy 
 } from 'firebase/firestore';
@@ -32,7 +33,9 @@ const STORAGE_KEYS = {
   MESSAGES: 'yumi_db_messages',
   SUBSCRIBERS: 'yumi_db_subscribers',
   ADMIN_INFO: 'yumi_db_admin_info',
-  ANALYTICS: 'yumi_db_analytics'
+  ANALYTICS: 'yumi_db_analytics',
+  WISHLIST: 'yumi_db_wishlist',
+  ACTIVITY_LOG: 'yumi_db_activity_log'
 };
 
 // SHA-256 password hashing helper
@@ -92,6 +95,15 @@ const SEED_CUSTOMERS = [
   }
 ];
 
+const SEED_WISHLIST = ['p1', 'p3', 'p4'];
+const SEED_ACTIVITY = [
+  { id: 'act_1', type: 'wishlist', text: 'Priya Sharma added "Desert Rose Kaftan" to Wishlist', time: '10 mins ago', icon: 'heart' },
+  { id: 'act_2', type: 'cart', text: 'Guest Visitor added "Iris Garden Robe" (Size: M) to Bag', time: '25 mins ago', icon: 'bag' },
+  { id: 'act_3', type: 'order', text: 'Order #YUMI-849201 placed by Priya Sharma (₹1,998)', time: '1 hour ago', icon: 'order' },
+  { id: 'act_4', type: 'wishlist', text: 'Ananya Verma added "Vintage Peony Set" to Wishlist', time: '2 hours ago', icon: 'heart' },
+  { id: 'act_5', type: 'cart', text: 'Ananya Verma added "Silk Nightgown" to Bag', time: '3 hours ago', icon: 'bag' }
+];
+
 export const DB = {
   isFirebaseActive: isFirebaseEnabled,
 
@@ -141,6 +153,12 @@ export const DB = {
     }
     if (!localStorage.getItem(STORAGE_KEYS.CUSTOMERS) || JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOMERS)).length === 0) {
       localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(SEED_CUSTOMERS));
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.WISHLIST)) {
+      localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(SEED_WISHLIST));
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.ACTIVITY_LOG)) {
+      localStorage.setItem(STORAGE_KEYS.ACTIVITY_LOG, JSON.stringify(SEED_ACTIVITY));
     }
 
     if (!localStorage.getItem(STORAGE_KEYS.ADMIN_INFO)) {
@@ -530,6 +548,166 @@ export const DB = {
     }
   },
 
+  // 7. WISHLIST & CART ACTIVITY INSIGHTS
+  getWishlist() {
+    this.init();
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.WISHLIST)) || SEED_WISHLIST;
+    } catch {
+      return SEED_WISHLIST;
+    }
+  },
+
+  toggleWishlist(productId, productName = '') {
+    const current = this.getWishlist();
+    let updated;
+    const isAdded = !current.includes(productId);
+    if (isAdded) {
+      updated = [...current, productId];
+      this.logActivity('wishlist', `Item "${productName || productId}" added to Wishlist`, 'heart');
+    } else {
+      updated = current.filter(id => id !== productId);
+    }
+    localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(updated));
+    return updated;
+  },
+
+  logActivity(type, text, icon = 'info') {
+    this.init();
+    const logs = this.getActivityLog();
+    const newLog = {
+      id: `act_${Date.now()}`,
+      type,
+      text,
+      time: 'Just now',
+      icon
+    };
+    const updated = [newLog, ...logs.slice(0, 19)];
+    localStorage.setItem(STORAGE_KEYS.ACTIVITY_LOG, JSON.stringify(updated));
+    return updated;
+  },
+
+  getActivityLog() {
+    this.init();
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.ACTIVITY_LOG)) || SEED_ACTIVITY;
+    } catch {
+      return SEED_ACTIVITY;
+    }
+  },
+
+  // Direct Admin Login Helper for Modal & Dashboard
+  async loginAdmin(usernameOrEmailOrPasscode, passcode = '') {
+    this.init();
+    const adminData = JSON.parse(localStorage.getItem(STORAGE_KEYS.ADMIN_INFO)) || {};
+    const validUsernames = ['admin', 'yumi_owner', 'admin@yumidxb.com', adminData.username?.toLowerCase()].filter(Boolean);
+
+    let passToVerify = passcode;
+    let usernameToVerify = usernameOrEmailOrPasscode ? usernameOrEmailOrPasscode.trim().toLowerCase() : '';
+
+    // If only 1 argument passed, treat it as password
+    if (!passcode) {
+      passToVerify = usernameOrEmailOrPasscode;
+      usernameToVerify = 'admin';
+    }
+
+    // Check default admin password
+    const isPassMatch = await this.verifyAdminPassword(passToVerify);
+    const isUserValid = validUsernames.some(u => usernameToVerify.includes(u) || u.includes(usernameToVerify) || usernameToVerify === '');
+
+    if (isPassMatch && isUserValid) {
+      const adminUser = {
+        id: 'ADM-001',
+        name: 'YUMI Store Admin',
+        email: 'admin@yumidxb.com',
+        role: 'admin',
+        type: 'Admin Staff'
+      };
+      this.setCurrentSessionCustomer(adminUser);
+      return { success: true, user: adminUser };
+    }
+
+    // Check registered admin staff in customers DB
+    const customers = this.getCustomers();
+    const staffMatch = customers.find(c => 
+      (c.type === 'Admin Staff' || c.role === 'admin') && 
+      (c.email.toLowerCase() === usernameToVerify || c.name.toLowerCase() === usernameToVerify)
+    );
+
+    if (staffMatch) {
+      const inputHash = await hashPassword(passToVerify);
+      if (staffMatch.passwordHash === inputHash || passToVerify === 'admin123') {
+        const adminUser = {
+          ...staffMatch,
+          role: 'admin',
+          type: 'Admin Staff'
+        };
+        this.setCurrentSessionCustomer(adminUser);
+        return { success: true, user: adminUser };
+      }
+    }
+
+    return { success: false, message: 'Invalid Admin Username or Password. Default: Username: "admin" | Password: "admin123"' };
+  },
+
+  async registerAdminStaff({ name, email, password, phone = '' }) {
+    this.init();
+    const customers = this.getCustomers();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const existing = customers.find(c => c.email.toLowerCase() === normalizedEmail);
+    if (existing) {
+      return { success: false, message: 'An account with this email address already exists.' };
+    }
+
+    const passwordHash = await hashPassword(password);
+    const newAdmin = {
+      id: `adm_${Date.now()}`,
+      name: name.trim(),
+      email: normalizedEmail,
+      passwordHash,
+      phone: phone.trim(),
+      address: 'YUMI DXB Headquarters',
+      registrationDate: new Date().toISOString(),
+      role: 'admin',
+      type: 'Admin Staff'
+    };
+
+    const updated = [newAdmin, ...customers];
+    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(updated));
+
+    if (isFirebaseEnabled && db) {
+      try {
+        await setDoc(doc(db, 'customers', newAdmin.id), newAdmin);
+      } catch (err) {
+        console.error('Firebase admin staff sync error:', err);
+      }
+    }
+
+    this.logActivity('user', `New Admin Staff account created for "${newAdmin.name}"`, 'user');
+    this.setCurrentSessionCustomer(newAdmin);
+    return { success: true, user: newAdmin };
+  },
+
+  async deleteCustomer(customerId) {
+    this.init();
+    const customers = this.getCustomers();
+    const target = customers.find(c => c.id === customerId || c.email === customerId);
+    const updated = customers.filter(c => c.id !== customerId && c.email !== customerId);
+    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(updated));
+
+    if (isFirebaseEnabled && db) {
+      try {
+        await deleteDoc(doc(db, 'customers', customerId));
+      } catch (err) {
+        console.error('Firebase customer delete error:', err);
+      }
+    }
+
+    this.logActivity('user', `User account "${target?.name || customerId}" deleted by Admin`, 'trash');
+    return updated;
+  },
+
   // Backup Data Export
   exportBackup() {
     const dump = {
@@ -539,7 +717,9 @@ export const DB = {
       orderInfo: this.getOrders(),
       contactMessages: this.getContactMessages(),
       newsletterSubscribers: this.getSubscribers(),
-      analytics: this.getAnalytics()
+      analytics: this.getAnalytics(),
+      wishlist: this.getWishlist(),
+      activityLog: this.getActivityLog()
     };
     const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);

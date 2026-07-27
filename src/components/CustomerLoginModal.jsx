@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { X, User, Mail, Lock, Phone, MapPin, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { DB } from '../services/db';
 
-export default function CustomerLoginModal({ isOpen, onClose, onLoginSuccess }) {
-  const [mode, setMode] = useState('login'); // 'login' | 'register'
+export default function CustomerLoginModal({ isOpen, onClose, onLoginSuccess, initialMode = 'login' }) {
+  const [mode, setMode] = useState(initialMode); // 'login' | 'register' | 'admin'
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,11 +24,86 @@ export default function CustomerLoginModal({ isOpen, onClose, onLoginSuccess }) 
     setLoading(true);
 
     try {
+      if (mode === 'admin-register') {
+        if (!formData.name || !formData.email || !formData.password) {
+          setError('Please fill in all required fields for Admin Registration');
+          setLoading(false);
+          return;
+        }
+
+        if (formData.password.length < 6) {
+          setError('Admin password must be at least 6 characters long');
+          setLoading(false);
+          return;
+        }
+
+        const res = await DB.registerAdminStaff({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone
+        });
+
+        if (!res.success) {
+          setError(res.message);
+          setLoading(false);
+          return;
+        }
+
+        setSuccessMsg(`Admin Account Created for ${res.user.name}! Opening Dashboard...`);
+        setTimeout(() => {
+          onLoginSuccess(res.user);
+          onClose();
+          setSuccessMsg('');
+          setLoading(false);
+        }, 1000);
+        return;
+      }
+
+      if (mode === 'admin') {
+        if (!formData.password) {
+          setError('Please enter the admin password.');
+          setLoading(false);
+          return;
+        }
+
+        const res = await DB.loginAdmin(formData.email || 'admin', formData.password);
+        if (!res.success) {
+          setError(res.message);
+          setLoading(false);
+          return;
+        }
+
+        setSuccessMsg('Admin authentication successful! Opening Store Management Dashboard...');
+        setTimeout(() => {
+          onLoginSuccess(res.user);
+          onClose();
+          setSuccessMsg('');
+          setLoading(false);
+        }, 800);
+        return;
+      }
+
       if (mode === 'login') {
         if (!formData.email || !formData.password) {
           setError('Please enter your email and password');
           setLoading(false);
           return;
+        }
+
+        // Check if user is logging in with admin credentials via regular form
+        if (formData.email.toLowerCase().includes('admin') || formData.password === 'admin123') {
+          const adminRes = await DB.loginAdmin(formData.password);
+          if (adminRes.success) {
+            setSuccessMsg('Welcome YUMI Store Admin! Opening Dashboard...');
+            setTimeout(() => {
+              onLoginSuccess(adminRes.user);
+              onClose();
+              setSuccessMsg('');
+              setLoading(false);
+            }, 800);
+            return;
+          }
         }
 
         const res = await DB.loginCustomer(formData.email, formData.password);
@@ -110,18 +185,25 @@ export default function CustomerLoginModal({ isOpen, onClose, onLoginSuccess }) 
         </button>
 
         {/* Modal Title */}
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <div style={{
-            width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(201, 123, 123, 0.1)',
+            width: '56px', height: '56px', borderRadius: '50%',
+            backgroundColor: (mode === 'admin' || mode === 'admin-register') ? 'rgba(31, 42, 68, 0.1)' : 'rgba(201, 123, 123, 0.1)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px auto'
           }}>
-            <User size={28} color="#C97B7B" />
+            {(mode === 'admin' || mode === 'admin-register') ? <ShieldCheck size={28} color="#1F2A44" /> : <User size={28} color="#C97B7B" />}
           </div>
           <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.6rem', color: '#1F2A44', marginBottom: '4px' }}>
-            {mode === 'login' ? 'Customer Sign In' : 'Create Customer Account'}
+            {mode === 'login' && 'Customer Sign In'}
+            {mode === 'register' && 'Create Customer Account'}
+            {mode === 'admin' && 'Store Admin Sign In'}
+            {mode === 'admin-register' && 'Create Admin Staff Account'}
           </h2>
           <p style={{ fontSize: '0.85rem', color: '#666' }}>
-            {mode === 'login' ? 'Access your saved addresses, wishlists, and orders' : 'Join YUMI DXB for exclusive rewards & easy checkout'}
+            {mode === 'login' && 'Access your saved addresses, wishlists, and orders'}
+            {mode === 'register' && 'Join YUMI DXB for exclusive rewards & easy checkout'}
+            {mode === 'admin' && 'Staff authentication to access management console'}
+            {mode === 'admin-register' && 'Register a new store management staff account'}
           </p>
         </div>
 
@@ -134,7 +216,7 @@ export default function CustomerLoginModal({ isOpen, onClose, onLoginSuccess }) 
             onClick={() => { setMode('login'); setError(''); }}
             style={{
               flex: 1, padding: '8px', border: 'none', borderRadius: '8px', cursor: 'pointer',
-              fontWeight: 600, fontSize: '0.85rem',
+              fontWeight: 600, fontSize: '0.8rem',
               backgroundColor: mode === 'login' ? '#FFFFFF' : 'transparent',
               color: mode === 'login' ? '#1F2A44' : '#666',
               boxShadow: mode === 'login' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none'
@@ -147,13 +229,26 @@ export default function CustomerLoginModal({ isOpen, onClose, onLoginSuccess }) 
             onClick={() => { setMode('register'); setError(''); }}
             style={{
               flex: 1, padding: '8px', border: 'none', borderRadius: '8px', cursor: 'pointer',
-              fontWeight: 600, fontSize: '0.85rem',
+              fontWeight: 600, fontSize: '0.8rem',
               backgroundColor: mode === 'register' ? '#FFFFFF' : 'transparent',
               color: mode === 'register' ? '#1F2A44' : '#666',
               boxShadow: mode === 'register' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none'
             }}
           >
             Register
+          </button>
+          <button
+            type="button"
+            onClick={() => { setMode('admin'); setError(''); }}
+            style={{
+              flex: 1, padding: '8px', border: 'none', borderRadius: '8px', cursor: 'pointer',
+              fontWeight: 600, fontSize: '0.8rem',
+              backgroundColor: (mode === 'admin' || mode === 'admin-register') ? '#1F2A44' : 'transparent',
+              color: (mode === 'admin' || mode === 'admin-register') ? '#FFFFFF' : '#666',
+              boxShadow: (mode === 'admin' || mode === 'admin-register') ? '0 2px 8px rgba(0,0,0,0.1)' : 'none'
+            }}
+          >
+            🔒 Admin
           </button>
         </div>
 
@@ -176,30 +271,34 @@ export default function CustomerLoginModal({ isOpen, onClose, onLoginSuccess }) 
         )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          {mode === 'register' && (
+          {(mode === 'register' || mode === 'admin-register') && (
             <div>
-              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#1F2A44', display: 'block', marginBottom: '4px' }}>Full Name *</label>
+              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#1F2A44', display: 'block', marginBottom: '4px' }}>
+                {mode === 'admin-register' ? 'Admin Full Name *' : 'Full Name *'}
+              </label>
               <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #E2D9CF', borderRadius: '10px', padding: '8px 12px' }}>
                 <User size={16} color="#999" style={{ marginRight: '8px' }} />
                 <input
                   type="text"
-                  placeholder="e.g. Ananya Sharma"
+                  placeholder={mode === 'admin-register' ? "e.g. Rahul Mehta (Store Manager)" : "e.g. Ananya Sharma"}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.9rem' }}
-                  required
+                  required={(mode === 'register' || mode === 'admin-register')}
                 />
               </div>
             </div>
           )}
 
           <div>
-            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#1F2A44', display: 'block', marginBottom: '4px' }}>Email Address *</label>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#1F2A44', display: 'block', marginBottom: '4px' }}>
+              {(mode === 'admin' || mode === 'admin-register') ? 'Admin Username or Email *' : 'Email Address *'}
+            </label>
             <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #E2D9CF', borderRadius: '10px', padding: '8px 12px' }}>
-              <Mail size={16} color="#999" style={{ marginRight: '8px' }} />
+              {(mode === 'admin' || mode === 'admin-register') ? <User size={16} color="#999" style={{ marginRight: '8px' }} /> : <Mail size={16} color="#999" style={{ marginRight: '8px' }} />}
               <input
-                type="email"
-                placeholder="ananya@example.com"
+                type={(mode === 'admin' || mode === 'admin-register') ? "text" : "email"}
+                placeholder={(mode === 'admin' || mode === 'admin-register') ? "admin or admin@yumidxb.com" : "ananya@example.com"}
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.9rem' }}
@@ -209,12 +308,14 @@ export default function CustomerLoginModal({ isOpen, onClose, onLoginSuccess }) 
           </div>
 
           <div>
-            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#1F2A44', display: 'block', marginBottom: '4px' }}>Password *</label>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#1F2A44', display: 'block', marginBottom: '4px' }}>
+              {(mode === 'admin' || mode === 'admin-register') ? 'Admin Password *' : 'Password *'}
+            </label>
             <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #E2D9CF', borderRadius: '10px', padding: '8px 12px' }}>
               <Lock size={16} color="#999" style={{ marginRight: '8px' }} />
               <input
                 type="password"
-                placeholder="••••••••"
+                placeholder={(mode === 'admin' || mode === 'admin-register') ? "admin123" : "••••••••"}
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.9rem' }}
@@ -265,9 +366,11 @@ export default function CustomerLoginModal({ isOpen, onClose, onLoginSuccess }) 
             }}
           >
             {loading 
-              ? (mode === 'login' ? 'Authenticating...' : 'Creating Account...') 
-              : (mode === 'login' ? 'Sign In to Account' : 'Complete Registration')}
+              ? (mode.startsWith('admin') ? 'Authenticating Admin...' : mode === 'login' ? 'Authenticating...' : 'Creating Account...') 
+              : (mode === 'admin-register' ? 'Register New Admin Account 🔒' : mode === 'admin' ? 'Unlock Admin Dashboard 🔒' : mode === 'login' ? 'Sign In to Account' : 'Complete Registration')}
           </button>
+
+
 
         </form>
 

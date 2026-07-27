@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Search, User, LogOut, Menu, X, Sparkles } from 'lucide-react';
+import { ShoppingBag, Search, User, LogOut, Menu, X, Sparkles, Heart, ShieldCheck } from 'lucide-react';
 import { BRAND_DETAILS } from '../data/products';
 
 export default function Header({ 
   cartCount, 
+  wishlistCount = 0,
   onOpenCart, 
   activeTab, 
   setActiveTab, 
@@ -102,8 +103,8 @@ export default function Header({
           </button>
         </nav>
 
-        {/* Right Action Icons (Search, Customer Account, Shopping Bag) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* Right Action Icons (Search, Wishlist, User Account / Sign In, Shopping Bag) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           
           {/* Search Trigger */}
           <div style={{ position: 'relative' }}>
@@ -131,26 +132,58 @@ export default function Header({
             )}
           </div>
 
-          {/* Customer Portal Button */}
+          {/* Wishlist Header Icon */}
+          <button 
+            onClick={() => setActiveTab('collections')}
+            title={`Wishlist (${wishlistCount} items)`}
+            style={{
+              position: 'relative', background: 'none', border: 'none', cursor: 'pointer',
+              color: wishlistCount > 0 ? '#C97B7B' : '#1A1A1A', padding: '6px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}
+          >
+            <Heart size={21} fill={wishlistCount > 0 ? "#C97B7B" : "none"} color={wishlistCount > 0 ? "#C97B7B" : "#1A1A1A"} />
+            {wishlistCount > 0 && (
+              <span style={{
+                position: 'absolute', top: '0px', right: '-2px', backgroundColor: '#C97B7B', color: '#FFF',
+                borderRadius: '50%', padding: '1px 5px', fontSize: '0.68rem', fontWeight: 700
+              }}>
+                {wishlistCount}
+              </span>
+            )}
+          </button>
+
+          {/* User Account / Login Button */}
           {currentUser ? (
-            <button 
-              onClick={() => setActiveTab('customer-dashboard')}
-              title="View Customer Dashboard & My Orders"
-              style={{
-                display: 'flex', alignItems: 'center', gap: '6px',
-                backgroundColor: activeTab === 'customer-dashboard' ? '#1F2A44' : 'rgba(201, 123, 123, 0.12)',
-                color: activeTab === 'customer-dashboard' ? '#FFF' : '#1F2A44',
-                padding: '6px 14px', borderRadius: '20px',
-                border: activeTab === 'customer-dashboard' ? '1px solid #1F2A44' : '1px solid rgba(201, 123, 123, 0.4)',
-                cursor: 'pointer', fontWeight: 700, fontSize: '0.82rem', transition: 'all 0.2s'
-              }}
-            >
-              <User size={14} color={activeTab === 'customer-dashboard' ? '#C97B7B' : '#C97B7B'} />
-              <span>My Account</span>
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <button 
+                onClick={() => setActiveTab(currentUser.role === 'admin' ? 'admin' : 'customer-dashboard')}
+                title={currentUser.role === 'admin' ? "Open Admin Dashboard" : "View Customer Account"}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  backgroundColor: '#1F2A44', color: '#FFF',
+                  padding: '6px 14px', borderRadius: '20px',
+                  border: '1px solid #1F2A44', cursor: 'pointer', fontWeight: 700, fontSize: '0.82rem', transition: 'all 0.2s'
+                }}
+              >
+                <User size={14} color="#C97B7B" />
+                <span>{currentUser.role === 'admin' ? 'Admin Dashboard' : 'My Account'}</span>
+              </button>
+
+              <button
+                onClick={onLogoutCustomer}
+                title="Log Out & Switch User"
+                style={{
+                  background: '#FFEBEE', border: 'none', borderRadius: '50%', width: '32px', height: '32px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#D32F2F'
+                }}
+              >
+                <LogOut size={15} />
+              </button>
+            </div>
           ) : (
             <button 
-              onClick={onOpenCustomerLogin}
+              onClick={() => onOpenCustomerLogin('login')}
               title="Customer Sign In / Register"
               style={{
                 backgroundColor: 'transparent', color: '#1F2A44', border: '1px solid rgba(31, 42, 68, 0.25)',
@@ -172,7 +205,6 @@ export default function Header({
             }}
             className="cart-btn"
           >
-
             <ShoppingBag size={18} color="#FFF" />
             <span>Bag</span>
             {cartCount > 0 && (

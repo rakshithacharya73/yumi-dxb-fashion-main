@@ -1,12 +1,14 @@
 import React from 'react';
-import { Eye, ShoppingBag, Star, Filter, Search, Sparkles } from 'lucide-react';
+import { Eye, ShoppingBag, Star, Filter, Search, Sparkles, Heart } from 'lucide-react';
 
 export default function ProductCatalog({ 
   products, 
   onSelectProduct, 
   onAddToCart,
   searchQuery,
-  setSearchQuery
+  setSearchQuery,
+  wishlistIds = [],
+  onToggleWishlist
 }) {
   const [selectedFabric, setSelectedFabric] = React.useState('All');
   const [sortBy, setSortBy] = React.useState('featured');
@@ -169,13 +171,45 @@ export default function ProductCatalog({
                     fontWeight: 700,
                     padding: '4px 10px',
                     borderRadius: '20px',
-                    zIndex: 2,
+                    zIndex: 3,
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px'
                   }}>
                     {product.badge}
                   </div>
                 )}
+
+                {/* Wishlist Heart Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onToggleWishlist) onToggleWishlist(product);
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    backgroundColor: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '36px',
+                    height: '36px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justify: 'center',
+                    cursor: 'pointer',
+                    zIndex: 3,
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.12)',
+                    transition: 'transform 0.2s'
+                  }}
+                  title={wishlistIds.includes(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
+                  <Heart 
+                    size={18} 
+                    fill={wishlistIds.includes(product.id) ? "#C97B7B" : "none"} 
+                    color={wishlistIds.includes(product.id) ? "#C97B7B" : "#1F2A44"} 
+                  />
+                </button>
 
                 {/* Product Image Box */}
                 <div 

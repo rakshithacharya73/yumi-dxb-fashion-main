@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { X, Star, ShoppingBag, ShieldCheck, RefreshCw, Sparkles, Check, Info } from 'lucide-react';
+import { X, Star, ShoppingBag, ShieldCheck, RefreshCw, Sparkles, Check, Info, Heart } from 'lucide-react';
 
-export default function ProductDetailModal({ product, onClose, onAddToCart }) {
+export default function ProductDetailModal({ 
+  product, 
+  onClose, 
+  onAddToCart,
+  wishlistIds = [],
+  onToggleWishlist
+}) {
   const [selectedSize, setSelectedSize] = useState(() => product?.sizes?.[0] || 'M');
   const [selectedImage, setSelectedImage] = useState(() => product?.images?.[0] || product?.image || '');
   const [quantity, setQuantity] = useState(1);
@@ -16,6 +22,8 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
   }, [product]);
 
   if (!product) return null;
+
+  const isWishlisted = wishlistIds.includes(product.id);
 
   const handleAdd = () => {
     onAddToCart(product, selectedSize, quantity);
@@ -186,26 +194,43 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
               </div>
             </div>
 
-            {/* Add to Bag CTA */}
-            <div style={{ marginTop: '8px' }}>
+            {/* Add to Bag CTA & Wishlist */}
+            <div style={{ marginTop: '8px', display: 'flex', gap: '12px' }}>
               <button 
                 onClick={handleAdd}
                 className="btn-primary" 
-                style={{ width: '100%', padding: '16px', fontSize: '1rem' }}
+                style={{ flex: 1, padding: '16px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
               >
                 <ShoppingBag size={20} /> Add to Bag (₹{product.price * quantity})
               </button>
 
-              {addedToast && (
-                <div style={{
-                  marginTop: '10px', backgroundColor: '#E8F5E9', color: '#2E7D32',
-                  padding: '10px', borderRadius: '8px', textAlign: 'center', fontSize: '0.85rem',
-                  fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-                }}>
-                  <Check size={16} /> Added {quantity} item(s) to your bag!
-                </div>
-              )}
+              <button
+                onClick={() => {
+                  if (onToggleWishlist) onToggleWishlist(product);
+                }}
+                style={{
+                  padding: '16px', borderRadius: '12px',
+                  backgroundColor: isWishlisted ? 'rgba(201, 123, 123, 0.15)' : '#F7F3EE',
+                  border: isWishlisted ? '1px solid #C97B7B' : '1px solid #E8E2D9',
+                  color: isWishlisted ? '#C97B7B' : '#1F2A44',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.2s'
+                }}
+                title={isWishlisted ? "In your wishlist" : "Add to Wishlist"}
+              >
+                <Heart size={20} fill={isWishlisted ? "#C97B7B" : "none"} color={isWishlisted ? "#C97B7B" : "#1F2A44"} />
+              </button>
             </div>
+
+            {addedToast && (
+              <div style={{
+                marginTop: '10px', backgroundColor: '#E8F5E9', color: '#2E7D32',
+                padding: '10px', borderRadius: '8px', textAlign: 'center', fontSize: '0.85rem',
+                fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+              }}>
+                <Check size={16} /> Added {quantity} item(s) to your bag!
+              </div>
+            )}
 
             {/* Care Instructions Accordion / Card */}
             {product.careInstructions && (
