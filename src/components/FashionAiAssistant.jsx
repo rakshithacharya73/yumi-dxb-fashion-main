@@ -166,20 +166,21 @@ export default function FashionAiAssistant({ products = [], onAddToCart, setActi
             onClick={() => setIsOpen(true)}
             title="Open YUMI AI Fashion & Voice Assistant"
             style={{
-              backgroundColor: '#1F2A44', color: '#FFFFFF', border: '2px solid #C97B7B',
-              borderRadius: '30px', padding: '12px 20px', cursor: 'pointer',
+              background: 'linear-gradient(135deg, #1F2A44 0%, #0F172A 100%)',
+              color: '#FFFFFF', border: '2px solid #C97B7B',
+              borderRadius: '30px', padding: '12px 22px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: '10px',
-              boxShadow: '0 8px 24px rgba(31, 42, 68, 0.35)', transition: 'all 0.3s'
+              boxShadow: '0 10px 30px rgba(201, 123, 123, 0.4)', transition: 'all 0.3s transform'
             }}
           >
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
               <Sparkles size={20} color="#C97B7B" />
               <span style={{
-                position: 'absolute', top: '-4px', right: '-4px', width: '8px', height: '8px',
-                backgroundColor: '#2E7D32', borderRadius: '50%'
+                position: 'absolute', top: '-4px', right: '-4px', width: '9px', height: '9px',
+                backgroundColor: '#4CAF50', borderRadius: '50%', border: '2px solid #1F2A44'
               }}></span>
             </div>
-            <span style={{ fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.3px' }}>AI Stylist & Voice</span>
+            <span style={{ fontWeight: 800, fontSize: '0.92rem', letterSpacing: '0.4px' }}>AI Stylist & Voice</span>
           </button>
         )}
       </div>
@@ -188,29 +189,29 @@ export default function FashionAiAssistant({ products = [], onAddToCart, setActi
       {isOpen && (
         <div style={{
           position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
-          width: '380px', maxWidth: 'calc(100vw - 32px)', height: '560px', maxHeight: 'calc(100vh - 40px)',
+          width: '380px', maxWidth: 'calc(100vw - 32px)', height: '570px', maxHeight: 'calc(100vh - 40px)',
           backgroundColor: '#FFFFFF', borderRadius: '24px',
-          boxShadow: '0 16px 40px rgba(31, 42, 68, 0.25)', border: '1px solid #E8E2D9',
+          boxShadow: '0 20px 50px rgba(15, 23, 42, 0.3)', border: '1.5px solid #C97B7B',
           display: 'flex', flexDirection: 'column', overflow: 'hidden'
         }} className="animate-fade-in">
           
           {/* Header */}
           <div style={{
-            backgroundColor: '#1F2A44', color: '#FFFFFF', padding: '16px 20px',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+            background: 'linear-gradient(135deg, #1F2A44 0%, #2A3859 100%)', color: '#FFFFFF', padding: '16px 20px',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #C97B7B'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{
-                width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(201,123,123,0.2)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #C97B7B'
+                width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'rgba(201,123,123,0.25)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #C97B7B'
               }}>
-                <Bot size={20} color="#C97B7B" />
+                <Bot size={22} color="#C97B7B" />
               </div>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ fontWeight: 800, fontSize: '0.98rem', display: 'flex', alignItems: 'center', gap: '6px', letterSpacing: '0.3px' }}>
                   YUMI AI Stylist <Sparkles size={14} color="#C97B7B" />
                 </div>
-                <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.7)' }}>
+                <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.75)' }}>
                   Online • Voice & Text Assistant
                 </div>
               </div>
@@ -234,15 +235,15 @@ export default function FashionAiAssistant({ products = [], onAddToCart, setActi
           </div>
 
           {/* Quick Suggestion Chips */}
-          <div style={{ backgroundColor: '#F7F3EE', padding: '10px 14px', borderBottom: '1px solid #E8E2D9', display: 'flex', gap: '8px', overflowX: 'auto', whiteSpace: 'nowrap' }}>
+          <div style={{ backgroundColor: '#F5EFE6', padding: '10px 14px', borderBottom: '1px solid #E8E2D9', display: 'flex', gap: '8px', overflowX: 'auto', whiteSpace: 'nowrap' }}>
             {['Recommend Robes', 'Dubai Kaftans', 'Fabric Care', 'Track Order', '10% Discount'].map((chip, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSendMessage(chip)}
                 style={{
-                  backgroundColor: '#FFFFFF', border: '1px solid #D5CEC4', color: '#1F2A44',
-                  borderRadius: '16px', padding: '4px 12px', fontSize: '0.75rem', fontWeight: 600,
-                  cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0
+                  backgroundColor: '#FFFFFF', border: '1px solid #C97B7B', color: '#1F2A44',
+                  borderRadius: '16px', padding: '5px 13px', fontSize: '0.76rem', fontWeight: 700,
+                  cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0, boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
                 }}
               >
                 {chip}
@@ -251,7 +252,7 @@ export default function FashionAiAssistant({ products = [], onAddToCart, setActi
           </div>
 
           {/* Chat Messages Body */}
-          <div style={{ flex: 1, padding: '16px', overflowY: 'auto', backgroundColor: '#FAFAFA', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ flex: 1, padding: '16px', overflowY: 'auto', background: 'linear-gradient(180deg, #FBF8F5 0%, #F5EFE6 100%)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {messages.map((msg) => (
               <div
                 key={msg.id}

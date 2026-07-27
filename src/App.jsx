@@ -227,104 +227,131 @@ export default function App() {
 
       {/* Footer */}
       {activeTab !== 'admin' && (
-        <footer style={{ backgroundColor: '#1F2A44', color: '#FFFFFF', padding: '48px 0 24px 0', borderTop: '1px solid #E8E2D9' }}>
+        <footer style={{
+          background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%)',
+          color: '#FFFFFF',
+          padding: '56px 0 28px 0',
+          borderTop: '2px solid rgba(201,123,123,0.35)',
+          boxShadow: '0 -10px 30px rgba(0,0,0,0.15)'
+        }}>
           <div className="container">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '36px', marginBottom: '36px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '40px', marginBottom: '40px' }}>
               
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                   <img 
                     src="/logo.png" 
                     alt="YUMI DXB Fashion Logo" 
-                    style={{ height: '40px', width: 'auto', borderRadius: '6px' }}
+                    style={{ height: '42px', width: 'auto', borderRadius: '6px' }}
                     onError={(e) => { e.target.style.display = 'none'; }}
                   />
-                  <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.6rem', fontWeight: '700', letterSpacing: '2px', color: '#FFF' }}>
-                    YUMI <span style={{ color: '#C97B7B', fontSize: '1.1rem' }}>DXB</span>
+                  <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.7rem', fontWeight: '800', letterSpacing: '2px', color: '#FFF' }}>
+                    YUMI <span style={{ color: '#C97B7B', fontSize: '1.15rem' }}>DXB</span>
                   </span>
                 </div>
-                <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', marginTop: '8px', lineHeight: 1.5 }}>
-                  {BRAND_DETAILS.tagline}. Started in 2024 by two sisters with a commitment to family-first quality.
+                <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.75)', marginTop: '8px', lineHeight: 1.6 }}>
+                  {BRAND_DETAILS.tagline}. Handcrafted luxury loungewear designed for pure comfort and timeless elegance.
                 </p>
               </div>
 
               <div>
-                <h4 style={{ fontSize: '1rem', color: '#FFF', marginBottom: '12px' }}>Quick Navigation</h4>
-                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.88rem' }}>
-                  <li onClick={() => setActiveTab('home')} style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.8)' }}>Home</li>
-                  <li onClick={() => setActiveTab('collections')} style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.8)' }}>Collections</li>
-                  <li onClick={() => setActiveTab('story')} style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.8)' }}>Our Story</li>
-                  <li onClick={() => setActiveTab('contact')} style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.8)' }}>Contact Us</li>
+                <h4 style={{ fontSize: '1.05rem', color: '#FFF', fontWeight: 700, marginBottom: '16px', letterSpacing: '0.5px' }}>Quick Links</h4>
+                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem' }}>
+                  <li onClick={() => setActiveTab('home')} style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.85)', transition: 'color 0.2s' }}>Home</li>
+                  <li onClick={() => setActiveTab('collections')} style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.85)', transition: 'color 0.2s' }}>Collections</li>
+                  <li onClick={() => setActiveTab('story')} style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.85)', transition: 'color 0.2s' }}>Our Story</li>
+                  <li onClick={() => setActiveTab('contact')} style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.85)', transition: 'color 0.2s' }}>Contact Us</li>
                 </ul>
               </div>
 
               <div>
-                <h4 style={{ fontSize: '1rem', color: '#FFF', marginBottom: '12px' }}>Contact & Connect</h4>
-                <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.8)', marginBottom: '6px' }}>Email: hello@yumidxb.com</p>
-                <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', marginBottom: '16px' }}>Pan-India & Global Express Doorstep Shipping</p>
+                <h4 style={{ fontSize: '1.05rem', color: '#FFF', fontWeight: 700, marginBottom: '16px', letterSpacing: '0.5px' }}>Connect & Support</h4>
+                
+                {/* Email link with icon */}
+                <a 
+                  href="mailto:hello@yumidxb.com"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    color: 'rgba(255,255,255,0.9)', textDecoration: 'none',
+                    fontSize: '0.9rem', marginBottom: '10px', fontWeight: 600
+                  }}
+                >
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(201,123,123,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Mail size={15} color="#C97B7B" />
+                  </div>
+                  hello@yumidxb.com
+                </a>
 
-                {/* Social & Google Maps Icons */}
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                  {/* Instagram Icon */}
+                <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)', marginBottom: '18px' }}>
+                  Pan-India & Global Express Doorstep Delivery 🚚
+                </p>
+
+                {/* Original Brand Social & Google Maps Icons */}
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+                  
+                  {/* Instagram Authentic Gradient Icon */}
                   <a 
                     href="https://instagram.com/yumi_dxb" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    title="Instagram - @yumi_dxb"
+                    title="Follow on Instagram (@yumi_dxb)"
                     style={{
-                      width: '38px', height: '38px', borderRadius: '50%',
-                      backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFF',
+                      width: '42px', height: '42px', borderRadius: '50%',
+                      background: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'all 0.2s', textDecoration: 'none'
+                      boxShadow: '0 4px 12px rgba(225,48,108,0.4)', transition: 'transform 0.2s', textDecoration: 'none'
                     }}
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C97B7B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                       <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                     </svg>
                   </a>
 
-                  {/* Facebook Icon */}
+                  {/* Facebook Authentic Brand Icon */}
                   <a 
                     href="https://facebook.com" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    title="Facebook Page - YUMI DXB"
+                    title="Follow on Facebook"
                     style={{
-                      width: '38px', height: '38px', borderRadius: '50%',
-                      backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFF',
+                      width: '42px', height: '42px', borderRadius: '50%',
+                      backgroundColor: '#1877F2',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'all 0.2s', textDecoration: 'none'
+                      boxShadow: '0 4px 12px rgba(24,119,242,0.4)', transition: 'transform 0.2s', textDecoration: 'none'
                     }}
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1877F2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFFFFF">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                     </svg>
                   </a>
 
-                  {/* Google Maps Icon */}
+                  {/* Google Maps Authentic Brand Pin */}
                   <a 
                     href="https://maps.google.com/?q=Dubai+Fashion+Avenue" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    title="Google Maps Store Location"
+                    title="Open Store Location on Google Maps"
                     style={{
-                      width: '38px', height: '38px', borderRadius: '50%',
-                      backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFF',
+                      width: '42px', height: '42px', borderRadius: '50%',
+                      backgroundColor: '#FFFFFF',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'all 0.2s', textDecoration: 'none'
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)', transition: 'transform 0.2s', textDecoration: 'none'
                     }}
                   >
-                    <MapPin size={18} color="#EA4335" />
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#EA4335"/>
+                    </svg>
                   </a>
+
                 </div>
               </div>
 
             </div>
 
-            <div style={{ textAlign: 'center', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <div>© 2024 - 2026 {BRAND_DETAILS.name}. All rights reserved.</div>
+            <div style={{ textAlign: 'center', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <div>© 2024 - 2026 {BRAND_DETAILS.name}. All rights reserved. Designed for Luxury Loungewear.</div>
             </div>
           </div>
         </footer>
