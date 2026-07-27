@@ -14,6 +14,7 @@ import CustomerDashboard from './components/CustomerDashboard';
 
 import FashionLookbook from './components/FashionLookbook';
 import TestimonialsSection from './components/TestimonialsSection';
+import FashionAiAssistant from './components/FashionAiAssistant';
 
 import { BRAND_DETAILS } from './data/products';
 import { DB } from './services/db';
@@ -385,6 +386,15 @@ export default function App() {
             setCurrentConfirmationOrder(null);
             setActiveTab('admin');
           }}
+        />
+      )}
+
+      {/* GLOBAL AI CHATBOT & VOICE ASSISTANT */}
+      {activeTab !== 'admin' && (
+        <FashionAiAssistant 
+          products={products} 
+          onAddToCart={handleAddToCart}
+          setActiveTab={setActiveTab}
         />
       )}
 
