@@ -539,35 +539,7 @@ export default function CheckoutModal({
                     ))}
                   </div>
 
-                  {/* Payment Gateway Simulation Controls */}
-                  {formData.paymentMethod !== 'COD' && (
-                    <div style={{ backgroundColor: '#F0F4F8', padding: '12px 14px', borderRadius: '12px', border: '1px solid #CBD5E1' }}>
-                      <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
-                        ⚡ PAYMENT GATEWAY TEST SIMULATOR:
-                      </div>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        {[
-                          { id: 'success', label: '🟢 Success' },
-                          { id: 'failure', label: '🔴 Bank Fail' },
-                          { id: 'cancelled', label: '🟡 Cancelled' }
-                        ].map(opt => (
-                          <button
-                            key={opt.id}
-                            type="button"
-                            onClick={() => setSimulationOutcome(opt.id)}
-                            style={{
-                              flex: 1, padding: '4px 8px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700,
-                              border: simulationOutcome === opt.id ? '1.5px solid #1F2A44' : '1px solid #CBD5E1',
-                              backgroundColor: simulationOutcome === opt.id ? '#1F2A44' : '#FFF',
-                              color: simulationOutcome === opt.id ? '#FFF' : '#334155', cursor: 'pointer'
-                            }}
-                          >
-                            {opt.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+
 
                   {/* Checkout Error Message */}
                   {checkoutError && (
