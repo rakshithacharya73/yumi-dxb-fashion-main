@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  ShieldCheck, Package, ShoppingBag, Plus, Trash2, Edit, Check, 
-  TrendingUp, Users, Lock, LogOut, RefreshCw, AlertCircle, Sparkles, Eye, EyeOff,
-  Heart, ArrowUpRight, Clock, Activity, AlertTriangle, Layers, ChevronRight, Download
+  ShieldCheck, Package, ShoppingBag, Plus, Trash2, Check, 
+  TrendingUp, Users, Lock, LogOut, AlertCircle, Eye, EyeOff,
+  Heart, ArrowUpRight, Activity, AlertTriangle, RefreshCw, Sparkles, Clock
 } from 'lucide-react';
 import { DB } from '../services/db';
 
@@ -25,6 +25,27 @@ export default function AdminDashboard({
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'orders' | 'wishlist-cart' | 'inventory' | 'customers' | 'activity'
   const [customers, setCustomers] = useState(() => DB.getCustomers());
   const [activityLogs, setActivityLogs] = useState(() => DB.getActivityLog());
+
+  const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleManualRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setProducts(DB.getProducts());
+      setOrders(DB.getOrders());
+      setCustomers(DB.getCustomers());
+      setActivityLogs(DB.getActivityLog());
+      setIsRefreshing(false);
+    }, 400);
+  };
 
   useEffect(() => {
     if (currentUser?.role === 'admin') {
@@ -312,28 +333,66 @@ export default function AdminDashboard({
     <div style={{ backgroundColor: '#F7F3EE', minHeight: '100vh', padding: '40px 0' }}>
       <div className="container">
         
-        {/* Admin Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
+        {/* INTERACTIVE ADMIN TOP HEADER BAR */}
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '20px',
+          padding: '20px 28px',
+          marginBottom: '28px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+          border: '1px solid #E8E2D9',
+          display: 'flex',
+          justify: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '16px'
+        }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-              <span className="badge-blush">SHOP OWNER PORTAL</span>
-              <span style={{ fontSize: '0.8rem', color: '#2E7D32', fontWeight: 700, backgroundColor: '#E8F5E9', padding: '3px 10px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Check size={12} /> Live Sync Active
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
+              <span className="badge-blush" style={{ backgroundColor: '#1F2A44', color: '#FFF' }}>
+                MASTER ADMIN PORTAL
+              </span>
+              <span style={{ fontSize: '0.78rem', color: '#2E7D32', fontWeight: 700, backgroundColor: '#E8F5E9', padding: '3px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#2E7D32', display: 'inline-block' }}></span>
+                Live DB Sync Active
+              </span>
+              <span style={{ fontSize: '0.78rem', color: '#666', backgroundColor: '#F7F3EE', padding: '3px 10px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid #E8E2D9' }}>
+                <Clock size={12} color="#C97B7B" /> {currentTime}
               </span>
             </div>
-            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2.2rem', color: '#1F2A44', fontWeight: 700 }}>
-              YUMI DXB Management Console
+
+            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2.1rem', color: '#1F2A44', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+              YUMI DXB Management Console <Sparkles size={22} color="#C97B7B" />
             </h1>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          {/* Quick Action Control Bar */}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <button 
+              onClick={() => setShowAddProductModal(true)}
+              className="btn-accent"
+              style={{ padding: '10px 18px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+            >
+              <Plus size={16} /> Add New Product
+            </button>
+
+            <button 
+              onClick={handleManualRefresh}
+              className="btn-secondary"
+              style={{ padding: '10px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+              title="Refresh Data & Activity Logs"
+            >
+              <RefreshCw size={15} style={{ transition: 'transform 0.5s', transform: isRefreshing ? 'rotate(360deg)' : 'none' }} />
+              {isRefreshing ? 'Refreshing...' : 'Refresh Data'}
+            </button>
 
             <button 
               onClick={onExitAdmin}
               className="btn-secondary"
-              style={{ padding: '10px 18px', fontSize: '0.88rem' }}
+              style={{ padding: '10px 16px', fontSize: '0.85rem', backgroundColor: '#1F2A44', color: '#FFF', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '30px' }}
+              title="Sign Out of Admin & Return to Storefront Sign In Modal"
             >
-              <LogOut size={16} /> Return to Store
+              <LogOut size={15} color="#C97B7B" /> Sign In / Storefront
             </button>
           </div>
         </div>
@@ -491,8 +550,8 @@ export default function AdminDashboard({
                       <div>
                         <span style={{
                           fontSize: '0.75rem', fontWeight: 700, padding: '4px 10px', borderRadius: '12px',
-                          backgroundColor: o.orderStatus === 'Delivered' ? '#E8F5E9' : o.orderStatus === 'Shipped' ? '#E3F2FD' : '#FFF3E0',
-                          color: o.orderStatus === 'Delivered' ? '#2E7D32' : o.orderStatus === 'Shipped' ? '#1565C0' : '#E65100'
+                          backgroundColor: o.orderStatus === 'Delivered' ? '#E8F5E9' : o.orderStatus === 'Shipped' ? '#E3F2FD' : o.orderStatus === 'Customer Cancelled' ? '#FFEBEE' : '#FFF3E0',
+                          color: o.orderStatus === 'Delivered' ? '#2E7D32' : o.orderStatus === 'Shipped' ? '#1565C0' : o.orderStatus === 'Customer Cancelled' ? '#D32F2F' : '#E65100'
                         }}>
                           {o.orderStatus}
                         </span>
@@ -517,8 +576,8 @@ export default function AdminDashboard({
               </div>
 
               {/* Status Filter Buttons */}
-              <div style={{ display: 'flex', gap: '8px', backgroundColor: '#F7F3EE', padding: '4px', borderRadius: '12px' }}>
-                {['All', 'Processing', 'Shipped', 'Delivered'].map(st => (
+              <div style={{ display: 'flex', gap: '8px', backgroundColor: '#F7F3EE', padding: '4px', borderRadius: '12px', flexWrap: 'wrap' }}>
+                {['All', 'Processing', 'Shipped', 'Delivered', 'Customer Cancelled'].map(st => (
                   <button
                     key={st}
                     onClick={() => setOrderFilter(st)}
@@ -564,14 +623,15 @@ export default function AdminDashboard({
                           onChange={(e) => handleUpdateOrderStatus(o.orderId, e.target.value)}
                           style={{
                             padding: '8px 14px', borderRadius: '10px', fontWeight: 700, fontSize: '0.85rem',
-                            cursor: 'pointer', outline: 'none', border: '1px solid #C97B7B',
-                            backgroundColor: o.orderStatus === 'Delivered' ? '#E8F5E9' : o.orderStatus === 'Shipped' ? '#E3F2FD' : '#FFF3E0',
-                            color: o.orderStatus === 'Delivered' ? '#2E7D32' : o.orderStatus === 'Shipped' ? '#1565C0' : '#E65100'
+                            cursor: 'pointer', outline: 'none', border: o.orderStatus === 'Customer Cancelled' ? '1px solid #FFCDD2' : '1px solid #C97B7B',
+                            backgroundColor: o.orderStatus === 'Delivered' ? '#E8F5E9' : o.orderStatus === 'Shipped' ? '#E3F2FD' : o.orderStatus === 'Customer Cancelled' ? '#FFEBEE' : '#FFF3E0',
+                            color: o.orderStatus === 'Delivered' ? '#2E7D32' : o.orderStatus === 'Shipped' ? '#1565C0' : o.orderStatus === 'Customer Cancelled' ? '#D32F2F' : '#E65100'
                           }}
                         >
                           <option value="Processing">Processing ⏳</option>
                           <option value="Shipped">Shipped 🚚</option>
                           <option value="Delivered">Delivered ✅</option>
+                          <option value="Customer Cancelled">Customer Cancelled ❌</option>
                         </select>
                       </div>
                     </div>
@@ -906,8 +966,6 @@ export default function AdminDashboard({
           </div>
         )}
 
-      </div>
-
       {/* ADD PRODUCT MODAL */}
       {showAddProductModal && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, backgroundColor: 'rgba(31, 42, 68, 0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
@@ -980,6 +1038,118 @@ export default function AdminDashboard({
         </div>
       )}
 
+        {/* INTERACTIVE ADMIN DASHBOARD FOOTER */}
+        <footer style={{
+          marginTop: '48px',
+          backgroundColor: '#1F2A44',
+          color: '#FFFFFF',
+          borderRadius: '24px',
+          padding: '36px 32px 24px 32px',
+          borderTop: '3px solid #C97B7B',
+          boxShadow: '0 10px 30px rgba(15, 23, 42, 0.2)'
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '32px', marginBottom: '28px' }}>
+            
+            {/* Column 1: Console Info & Security Status */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(201,123,123,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #C97B7B' }}>
+                  <ShieldCheck size={20} color="#C97B7B" />
+                </div>
+                <div>
+                  <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.35rem', fontWeight: 800, letterSpacing: '1px', color: '#FFF' }}>
+                    YUMI <span style={{ color: '#C97B7B' }}>DXB</span>
+                  </span>
+                  <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                    Management Console v2.4
+                  </div>
+                </div>
+              </div>
+
+              <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.5, marginTop: '8px' }}>
+                Real-time inventory control, cloud order fulfillment, wishlist analytics, and customer management dashboard.
+              </p>
+
+              <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: '#81C784', fontWeight: 700 }}>
+                <Lock size={13} /> 256-Bit SSL Encrypted Admin Session
+              </div>
+            </div>
+
+            {/* Column 2: Dashboard Module Shortcuts */}
+            <div>
+              <h4 style={{ fontSize: '0.95rem', color: '#FFF', fontWeight: 700, marginBottom: '14px', letterSpacing: '0.5px' }}>
+                Console Quick Switch
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.82rem' }}>
+                {[
+                  { id: 'overview', label: 'Overview & Stats' },
+                  { id: 'orders', label: 'Orders Fulfillment' },
+                  { id: 'inventory', label: 'Stock & Catalog' },
+                  { id: 'wishlist-cart', label: 'Wishlist Insights' },
+                  { id: 'customers', label: 'Customer Base' },
+                  { id: 'activity', label: 'Live Audit Log' }
+                ].map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => { setActiveTab(item.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                    style={{
+                      background: activeTab === item.id ? 'rgba(201,123,123,0.2)' : 'none',
+                      border: activeTab === item.id ? '1px solid #C97B7B' : 'none',
+                      color: activeTab === item.id ? '#C97B7B' : 'rgba(255,255,255,0.85)',
+                      textAlign: 'left', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer',
+                      fontSize: '0.8rem', fontWeight: activeTab === item.id ? 700 : 500, transition: 'all 0.2s'
+                    }}
+                  >
+                    • {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Column 3: Live Quick Metrics Pill Box */}
+            <div>
+              <h4 style={{ fontSize: '0.95rem', color: '#FFF', fontWeight: 700, marginBottom: '14px', letterSpacing: '0.5px' }}>
+                Live Metrics Summary
+              </h4>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.82rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '10px' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.75)' }}>Total Revenue:</span>
+                  <strong style={{ color: '#81C784' }}>₹{totalRevenue.toLocaleString()}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '10px' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.75)' }}>Active Orders:</span>
+                  <strong style={{ color: '#FFF' }}>{totalOrdersCount}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '10px' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.75)' }}>Catalog Items:</span>
+                  <strong style={{ color: '#FFF' }}>{totalProductsCount} Products</strong>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div style={{
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+            paddingTop: '18px',
+            display: 'flex',
+            justify: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '12px',
+            fontSize: '0.78rem',
+            color: 'rgba(255,255,255,0.6)'
+          }}>
+            <div>© 2026 YUMI DXB Fashion Inc. All rights reserved. Master Admin Portal.</div>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <span>Database Sync: <strong>Active</strong></span>
+              <span>Status: <strong style={{ color: '#81C784' }}>Healthy</strong></span>
+            </div>
+          </div>
+        </footer>
+
+      </div>
     </div>
   );
 }

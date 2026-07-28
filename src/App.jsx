@@ -146,7 +146,13 @@ export default function App() {
             wishlistIds={wishlistIds}
             cartItems={cartItems}
             currentUser={currentUser}
-            onExitAdmin={() => setActiveTab('home')}
+            onExitAdmin={() => {
+              DB.setCurrentSessionCustomer(null);
+              setCurrentUser(null);
+              setActiveTab('home');
+              setLoginModalMode('admin');
+              setIsCustomerLoginOpen(true);
+            }}
           />
         ) : (
           <>
@@ -165,11 +171,12 @@ export default function App() {
                 <ProductCatalog 
                   products={products}
                   onSelectProduct={(p) => setSelectedProduct(p)}
-                  onQuickAdd={(p) => handleAddToCart(p, 'M', 1)}
+                  onAddToCart={(p, s) => handleAddToCart(p, s || 'M', 1)}
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
                   wishlistIds={wishlistIds}
                   onToggleWishlist={handleToggleWishlist}
+                  currentUser={currentUser}
                 />
                 <TestimonialsSection />
                 <Story />
@@ -196,11 +203,12 @@ export default function App() {
                 <ProductCatalog 
                   products={products}
                   onSelectProduct={(p) => setSelectedProduct(p)}
-                  onQuickAdd={(p) => handleAddToCart(p, 'M', 1)}
+                  onAddToCart={(p, s) => handleAddToCart(p, s || 'M', 1)}
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
                   wishlistIds={wishlistIds}
                   onToggleWishlist={handleToggleWishlist}
+                  currentUser={currentUser}
                 />
               </>
             )}
@@ -216,6 +224,7 @@ export default function App() {
                 currentUser={currentUser}
                 setCurrentUser={setCurrentUser}
                 orders={orders}
+                setOrders={setOrders}
                 onContinueShopping={() => setActiveTab('collections')}
                 onLogout={handleLogoutCustomer}
               />
@@ -400,7 +409,13 @@ export default function App() {
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
         cartItems={cartItems}
+        onUpdateQuantity={handleUpdateCartQuantity}
+        onRemoveItem={handleRemoveCartItem}
         onCompleteOrder={handleCompleteOrder}
+        onReturnToCart={() => {
+          setIsCheckoutOpen(false);
+          setIsCartOpen(true);
+        }}
         currentUser={currentUser}
       />
 
@@ -422,6 +437,8 @@ export default function App() {
           products={products} 
           onAddToCart={handleAddToCart}
           setActiveTab={setActiveTab}
+          isCartOpen={isCartOpen}
+          isCheckoutOpen={isCheckoutOpen}
         />
       )}
 

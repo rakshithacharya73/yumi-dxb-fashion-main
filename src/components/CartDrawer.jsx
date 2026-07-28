@@ -18,19 +18,19 @@ export default function CartDrawer({
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 1000,
-      backgroundColor: 'rgba(31, 42, 68, 0.6)', backdropFilter: 'blur(4px)',
+      position: 'fixed', inset: 0, zIndex: 20000,
+      backgroundColor: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(6px)',
       display: 'flex', justifyContent: 'flex-end'
     }}>
       
       <div style={{
         backgroundColor: '#FFFFFF',
         width: '100%',
-        maxWidth: '460px',
+        maxWidth: '480px',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: 'var(--shadow-lg)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
         animation: 'slideInRight 0.3s ease-out'
       }}>
         

@@ -26,7 +26,7 @@ export default function Hero({ onExploreClick, onStoryClick }) {
       <div className="container">
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '48px',
           alignItems: 'center'
         }}>
@@ -184,28 +184,6 @@ export default function Hero({ onExploreClick, onStoryClick }) {
                 <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1F2A44' }}>100% Quality Inspected</div>
                 <div style={{ fontSize: '0.78rem', color: '#666' }}>Family Tested Promise</div>
               </div>
-            </div>
-
-            {/* Decorative Gold Accent Badge Top Right */}
-            <div style={{
-              position: 'absolute',
-              top: '-15px',
-              right: '-15px',
-              backgroundColor: '#1F2A44',
-              color: '#FFF',
-              borderRadius: '50%',
-              width: '68px',
-              height: '68px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justify: 'center',
-              boxShadow: '0 8px 24px rgba(31,42,68,0.25)',
-              border: '2px solid #C97B7B',
-              zIndex: 10
-            }}>
-              <Sparkles size={16} color="#C97B7B" />
-              <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>YUMI</span>
             </div>
 
           </div>

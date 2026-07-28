@@ -370,6 +370,33 @@ export default function CustomerLoginModal({ isOpen, onClose, onLoginSuccess, in
               : (mode === 'admin-register' ? 'Register New Admin Account 🔒' : mode === 'admin' ? 'Unlock Admin Dashboard 🔒' : mode === 'login' ? 'Sign In to Account' : 'Complete Registration')}
           </button>
 
+          {/* Direct Switch Redirect Links */}
+          {mode === 'register' && (
+            <div style={{ textAlign: 'center', marginTop: '6px', fontSize: '0.85rem', color: '#555' }}>
+              Already have a YUMI account?{' '}
+              <button
+                type="button"
+                onClick={() => { setMode('login'); setError(''); }}
+                style={{ background: 'none', border: 'none', color: '#C97B7B', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                Sign In here →
+              </button>
+            </div>
+          )}
+
+          {mode === 'login' && (
+            <div style={{ textAlign: 'center', marginTop: '6px', fontSize: '0.85rem', color: '#555' }}>
+              Don't have an account yet?{' '}
+              <button
+                type="button"
+                onClick={() => { setMode('register'); setError(''); }}
+                style={{ background: 'none', border: 'none', color: '#C97B7B', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                Create Account / Sign Up →
+              </button>
+            </div>
+          )}
+
 
 
         </form>

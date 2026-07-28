@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Mail, Phone, Send, Sparkles, CheckCircle2, MapPin } from 'lucide-react';
+import { Mail, Phone, Send, Sparkles, CheckCircle2, MapPin, AlertCircle } from 'lucide-react';
 import { BRAND_DETAILS } from '../data/products';
 import { DB } from '../services/db';
+import { EmailService, validateEmail } from '../services/emailService';
 
 const InstagramIcon = ({ size = 22, color = "#C97B7B" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -14,12 +15,21 @@ const InstagramIcon = ({ size = 22, color = "#C97B7B" }) => (
 export default function ContactSection() {
   const [formState, setFormState] = useState({ name: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg('');
+
+    if (!validateEmail(formState.email)) {
+      setErrorMsg('Please enter a valid email address.');
+      return;
+    }
+
     DB.saveContactMessage(formState);
+    await EmailService.sendSupportMessage(formState);
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
@@ -29,7 +39,10 @@ export default function ContactSection() {
 
   const handleNewsletter = (e) => {
     e.preventDefault();
-    if (!newsletterEmail) return;
+    if (!validateEmail(newsletterEmail)) {
+      alert('Please enter a valid email address for newsletter subscription.');
+      return;
+    }
     DB.saveSubscriber(newsletterEmail);
     setNewsletterSubscribed(true);
     setTimeout(() => setNewsletterSubscribed(false), 4000);
@@ -178,6 +191,12 @@ export default function ContactSection() {
                   style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1px solid #D5CEC4', marginTop: '4px', outline: 'none', resize: 'none' }}
                 />
               </div>
+
+              {errorMsg && (
+                <div style={{ backgroundColor: '#FFEBEE', color: '#D32F2F', padding: '10px 14px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #FFCDD2' }}>
+                  <AlertCircle size={16} /> {errorMsg}
+                </div>
+              )}
 
               <button type="submit" className="btn-primary" style={{ padding: '14px', fontSize: '0.98rem', marginTop: '8px' }}>
                 <Send size={18} /> Send Message

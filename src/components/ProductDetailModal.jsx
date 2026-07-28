@@ -209,16 +209,19 @@ export default function ProductDetailModal({
                   if (onToggleWishlist) onToggleWishlist(product);
                 }}
                 style={{
-                  padding: '16px', borderRadius: '12px',
-                  backgroundColor: isWishlisted ? 'rgba(201, 123, 123, 0.15)' : '#F7F3EE',
-                  border: isWishlisted ? '1px solid #C97B7B' : '1px solid #E8E2D9',
+                  padding: '16px 20px', borderRadius: '14px',
+                  backgroundColor: isWishlisted ? '#FFF0F0' : '#F7F3EE',
+                  border: isWishlisted ? '1.5px solid #C97B7B' : '1px solid #E8E2D9',
                   color: isWishlisted ? '#C97B7B' : '#1F2A44',
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                  fontWeight: 700, fontSize: '0.9rem',
+                  boxShadow: isWishlisted ? '0 4px 14px rgba(201, 123, 123, 0.25)' : 'none',
                   transition: 'all 0.2s'
                 }}
                 title={isWishlisted ? "In your wishlist" : "Add to Wishlist"}
               >
                 <Heart size={20} fill={isWishlisted ? "#C97B7B" : "none"} color={isWishlisted ? "#C97B7B" : "#1F2A44"} />
+                <span>{isWishlisted ? 'Wishlisted' : 'Wishlist'}</span>
               </button>
             </div>
 

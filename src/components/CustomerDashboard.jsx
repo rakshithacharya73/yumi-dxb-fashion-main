@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { User, Package, MapPin, Phone, Mail, LogOut, ShoppingBag, Clock, CheckCircle2, Truck, ShieldCheck, ArrowRight, Edit2, Sparkles, Download } from 'lucide-react';
+import { User, Package, MapPin, Phone, Mail, LogOut, ShoppingBag, Clock, CheckCircle2, Truck, ShieldCheck, ArrowRight, Edit2, Sparkles, Download, XCircle } from 'lucide-react';
 import { DB } from '../services/db';
 
 export default function CustomerDashboard({ 
   currentUser, 
   setCurrentUser, 
   orders = [], 
+  setOrders,
   onContinueShopping,
   onLogout 
 }) {
@@ -17,6 +18,14 @@ export default function CustomerDashboard({
   });
   const [msg, setMsg] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+
+  const handleCancelOrder = async (orderId) => {
+    if (window.confirm(`Are you sure you want to cancel Order #${orderId}?`)) {
+      const updatedOrders = await DB.updateOrderStatus(orderId, 'Customer Cancelled');
+      if (setOrders) setOrders(updatedOrders);
+      DB.logActivity('order', `Order #${orderId} was cancelled by customer ${currentUser?.name || ''}`, 'heart');
+    }
+  };
 
   // Filter orders for logged in customer by email or phone
   const userEmail = (currentUser?.email || '').toLowerCase();
@@ -349,12 +358,12 @@ export default function CustomerDashboard({
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                           <span style={{
                             padding: '6px 14px', borderRadius: '20px', fontWeight: 700, fontSize: '0.82rem',
-                            backgroundColor: isDelivered ? '#E8F5E9' : status === 'Shipped' ? '#E3F2FD' : '#FFF3E0',
-                            color: isDelivered ? '#2E7D32' : status === 'Shipped' ? '#1565C0' : '#E65100',
+                            backgroundColor: (status === 'Customer Cancelled' || status === 'Cancelled') ? '#FFEBEE' : isDelivered ? '#E8F5E9' : status === 'Shipped' ? '#E3F2FD' : '#FFF3E0',
+                            color: (status === 'Customer Cancelled' || status === 'Cancelled') ? '#D32F2F' : isDelivered ? '#2E7D32' : status === 'Shipped' ? '#1565C0' : '#E65100',
                             display: 'flex', alignItems: 'center', gap: '6px'
                           }}>
-                            {isDelivered ? <CheckCircle2 size={14} /> : status === 'Shipped' ? <Truck size={14} /> : <Clock size={14} />}
-                            {status}
+                            {(status === 'Customer Cancelled' || status === 'Cancelled') ? <XCircle size={14} /> : isDelivered ? <CheckCircle2 size={14} /> : status === 'Shipped' ? <Truck size={14} /> : <Clock size={14} />}
+                            {(status === 'Customer Cancelled' || status === 'Cancelled') ? 'Customer Cancelled' : status}
                           </span>
 
                           <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1F2A44', backgroundColor: '#FFF', padding: '6px 14px', borderRadius: '20px', border: '1px solid #E8E2D9' }}>
@@ -442,7 +451,7 @@ export default function CustomerDashboard({
                               <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#1F2A44' }}>₹{order.totalAmount}</span>
                             </div>
 
-                            {/* Download Receipt Button Placed Directly Below Total Paid */}
+                            {/* Download Receipt Button */}
                             <button
                               onClick={() => handleDownloadReceipt(order)}
                               className="btn-primary"
@@ -453,6 +462,33 @@ export default function CustomerDashboard({
                             >
                               <Download size={16} /> Download Tax Receipt (PDF)
                             </button>
+
+                            {/* Customer Cancel Order Action Button */}
+                            {status !== 'Customer Cancelled' && status !== 'Cancelled' && status !== 'Delivered' && (
+                              <button
+                                onClick={() => handleCancelOrder(order.orderId)}
+                                style={{
+                                  width: '100%', marginTop: '10px', padding: '11px', fontSize: '0.85rem',
+                                  borderRadius: '12px', backgroundColor: '#FFEBEE', color: '#D32F2F',
+                                  border: '1px solid #FFCDD2', cursor: 'pointer', fontWeight: 700,
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                                  transition: 'all 0.2s'
+                                }}
+                                title="Cancel this order"
+                              >
+                                <XCircle size={16} /> Cancel Order
+                              </button>
+                            )}
+
+                            {(status === 'Customer Cancelled' || status === 'Cancelled') && (
+                              <div style={{
+                                marginTop: '10px', padding: '10px', borderRadius: '10px',
+                                backgroundColor: '#FFEBEE', color: '#D32F2F', fontSize: '0.82rem',
+                                fontWeight: 700, textAlign: 'center', border: '1px solid #FFCDD2'
+                              }}>
+                                ❌ Order Cancelled by Customer
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -552,6 +588,121 @@ export default function CustomerDashboard({
             </form>
           </div>
         )}
+
+        {/* INTERACTIVE CUSTOMER DASHBOARD FOOTER */}
+        <footer style={{
+          marginTop: '48px',
+          backgroundColor: '#1F2A44',
+          color: '#FFFFFF',
+          borderRadius: '24px',
+          padding: '36px 32px 24px 32px',
+          borderTop: '3px solid #C97B7B',
+          boxShadow: '0 10px 30px rgba(15, 23, 42, 0.15)'
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '32px', marginBottom: '28px' }}>
+            
+            {/* Column 1: Customer Portal Info & Assistance */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(201,123,123,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #C97B7B' }}>
+                  <User size={20} color="#C97B7B" />
+                </div>
+                <div>
+                  <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.35rem', fontWeight: 800, letterSpacing: '1px', color: '#FFF' }}>
+                    YUMI <span style={{ color: '#C97B7B' }}>DXB</span>
+                  </span>
+                  <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                    Customer Account Lounge
+                  </div>
+                </div>
+              </div>
+
+              <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.5, marginTop: '8px' }}>
+                Track live order status, download tax invoices, manage delivery addresses, and explore our handcrafted loungewear collection.
+              </p>
+
+              <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: '#81C784', fontWeight: 700 }}>
+                <ShieldCheck size={14} /> Verified Member Session • {currentUser.email}
+              </div>
+            </div>
+
+            {/* Column 2: Account Quick Links */}
+            <div>
+              <h4 style={{ fontSize: '0.95rem', color: '#FFF', fontWeight: 700, marginBottom: '14px', letterSpacing: '0.5px' }}>
+                Quick Navigation
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.82rem' }}>
+                <button
+                  onClick={() => setActiveTab('orders')}
+                  style={{
+                    background: 'none', border: 'none', color: activeTab === 'orders' ? '#C97B7B' : 'rgba(255,255,255,0.85)',
+                    textAlign: 'left', cursor: 'pointer', fontSize: '0.82rem', fontWeight: activeTab === 'orders' ? 700 : 500
+                  }}
+                >
+                  • My Orders & Tracking ({userOrders.length})
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('profile')}
+                  style={{
+                    background: 'none', border: 'none', color: activeTab === 'profile' ? '#C97B7B' : 'rgba(255,255,255,0.85)',
+                    textAlign: 'left', cursor: 'pointer', fontSize: '0.82rem', fontWeight: activeTab === 'profile' ? 700 : 500
+                  }}
+                >
+                  • Delivery Address & Profile
+                </button>
+
+                <button
+                  onClick={onContinueShopping}
+                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', textAlign: 'left', cursor: 'pointer', fontSize: '0.82rem' }}
+                >
+                  • Explore Store Collections
+                </button>
+              </div>
+            </div>
+
+            {/* Column 3: Live Order Summary Pills */}
+            <div>
+              <h4 style={{ fontSize: '0.95rem', color: '#FFF', fontWeight: 700, marginBottom: '14px', letterSpacing: '0.5px' }}>
+                Orders Summary
+              </h4>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.82rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '10px' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.75)' }}>Total Placed:</span>
+                  <strong style={{ color: '#FFF' }}>{userOrders.length} Orders</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '10px' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.75)' }}>Active Processing:</span>
+                  <strong style={{ color: '#E65100' }}>{userOrders.filter(o => o.orderStatus === 'Processing' || !o.orderStatus).length}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '10px' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.75)' }}>Delivered:</span>
+                  <strong style={{ color: '#81C784' }}>{userOrders.filter(o => o.orderStatus === 'Delivered').length}</strong>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div style={{
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+            paddingTop: '18px',
+            display: 'flex',
+            justify: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '12px',
+            fontSize: '0.78rem',
+            color: 'rgba(255,255,255,0.6)'
+          }}>
+            <div>© 2026 YUMI DXB Fashion Inc. All rights reserved. Member Dashboard.</div>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <span>Express Delivery: <strong>Pan-India & Dubai</strong></span>
+              <span>Need Help? <strong style={{ color: '#C97B7B' }}>support@yumidxb.com</strong></span>
+            </div>
+          </div>
+        </footer>
 
       </div>
     </div>

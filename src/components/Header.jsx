@@ -155,7 +155,7 @@ export default function Header({
 
           {/* User Account / Login Button */}
           {currentUser ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <button 
                 onClick={() => setActiveTab(currentUser.role === 'admin' ? 'admin' : 'customer-dashboard')}
                 title={currentUser.role === 'admin' ? "Open Admin Dashboard" : "View Customer Account"}
@@ -168,6 +168,29 @@ export default function Header({
               >
                 <User size={14} color="#C97B7B" />
                 <span>{currentUser.role === 'admin' ? 'Admin Dashboard' : 'My Account'}</span>
+              </button>
+
+              {/* Shopping Bag / Cart — Shown only when user is logged in */}
+              <button 
+                onClick={onOpenCart}
+                style={{
+                  position: 'relative', background: '#1F2A44', color: '#FFFFFF', border: 'none',
+                  padding: '6px 14px', borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
+                  fontWeight: 700, fontSize: '0.82rem', transition: 'all 0.2s'
+                }}
+                className="cart-btn"
+                title="View Shopping Bag"
+              >
+                <ShoppingBag size={15} color="#FFF" />
+                <span>Bag</span>
+                {cartCount > 0 && (
+                  <span style={{
+                    backgroundColor: '#C97B7B', color: '#FFF', borderRadius: '50%', padding: '1px 6px',
+                    fontSize: '0.72rem', fontWeight: 800
+                  }}>
+                    {cartCount}
+                  </span>
+                )}
               </button>
 
               <button
@@ -183,39 +206,17 @@ export default function Header({
             </div>
           ) : (
             <button 
-              onClick={() => onOpenCustomerLogin('login')}
-              title="Customer Sign In / Register"
+              onClick={() => onOpenCustomerLogin('register')}
+              title="Customer Sign Up / Sign In"
               style={{
                 backgroundColor: 'transparent', color: '#1F2A44', border: '1px solid rgba(31, 42, 68, 0.25)',
                 padding: '6px 14px', borderRadius: '20px', fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center',
                 gap: '6px', cursor: 'pointer', transition: 'all 0.2s'
               }}
             >
-              <User size={15} color="#C97B7B" /> Sign In / Register
+              <User size={15} color="#C97B7B" /> Sign Up / Sign In
             </button>
           )}
-
-          {/* Shopping Bag / Cart */}
-          <button 
-            onClick={onOpenCart}
-            style={{
-              position: 'relative', background: '#1F2A44', color: '#FFFFFF', border: 'none',
-              padding: '10px 16px', borderRadius: '25px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-              fontWeight: 600, fontSize: '0.85rem', transition: 'all 0.2s'
-            }}
-            className="cart-btn"
-          >
-            <ShoppingBag size={18} color="#FFF" />
-            <span>Bag</span>
-            {cartCount > 0 && (
-              <span style={{
-                backgroundColor: '#C97B7B', color: '#FFF', borderRadius: '50%', padding: '2px 7px',
-                fontSize: '0.75rem', fontWeight: 700
-              }}>
-                {cartCount}
-              </span>
-            )}
-          </button>
         </div>
       </div>
 
@@ -226,7 +227,11 @@ export default function Header({
           <button onClick={() => { setActiveTab('collections'); setMobileMenuOpen(false); }} style={{ textAlign: 'left', padding: '8px 0', border: 'none', background: 'none', fontSize: '1rem', fontWeight: 600 }}>Collections</button>
           <button onClick={() => { setActiveTab('story'); setMobileMenuOpen(false); }} style={{ textAlign: 'left', padding: '8px 0', border: 'none', background: 'none', fontSize: '1rem', fontWeight: 600 }}>Our Story</button>
           <button onClick={() => { setActiveTab('contact'); setMobileMenuOpen(false); }} style={{ textAlign: 'left', padding: '8px 0', border: 'none', background: 'none', fontSize: '1rem', fontWeight: 600 }}>Contact Us</button>
-          {!currentUser && (
+          {currentUser ? (
+            <button onClick={() => { onOpenCart(); setMobileMenuOpen(false); }} style={{ textAlign: 'left', padding: '8px 0', border: 'none', background: 'none', fontSize: '1rem', fontWeight: 600, color: '#1F2A44', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ShoppingBag size={18} color="#C97B7B" /> Shopping Bag {cartCount > 0 && `(${cartCount})`}
+            </button>
+          ) : (
             <button onClick={() => { onOpenCustomerLogin(); setMobileMenuOpen(false); }} style={{ textAlign: 'left', padding: '8px 0', border: 'none', background: 'none', fontSize: '1rem', fontWeight: 600, color: '#C97B7B' }}>
               Sign In / Account
             </button>

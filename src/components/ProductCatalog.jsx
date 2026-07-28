@@ -8,7 +8,8 @@ export default function ProductCatalog({
   searchQuery,
   setSearchQuery,
   wishlistIds = [],
-  onToggleWishlist
+  onToggleWishlist,
+  currentUser
 }) {
   const [selectedFabric, setSelectedFabric] = React.useState('All');
   const [sortBy, setSortBy] = React.useState('featured');
@@ -189,25 +190,36 @@ export default function ProductCatalog({
                     position: 'absolute',
                     top: '12px',
                     right: '12px',
-                    backgroundColor: '#FFFFFF',
-                    border: 'none',
+                    backgroundColor: wishlistIds.includes(product.id) ? '#FFF0F0' : 'rgba(255, 255, 255, 0.95)',
+                    border: wishlistIds.includes(product.id) ? '1.5px solid #C97B7B' : '1px solid rgba(255, 255, 255, 0.8)',
                     borderRadius: '50%',
-                    width: '36px',
-                    height: '36px',
+                    width: '38px',
+                    height: '38px',
+                    padding: 0,
+                    margin: 0,
                     display: 'flex',
                     alignItems: 'center',
                     justify: 'center',
                     cursor: 'pointer',
-                    zIndex: 3,
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.12)',
-                    transition: 'transform 0.2s'
+                    zIndex: 4,
+                    boxShadow: wishlistIds.includes(product.id) ? '0 6px 16px rgba(201, 123, 123, 0.4)' : '0 4px 12px rgba(0,0,0,0.12)',
+                    transition: 'all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                    transform: wishlistIds.includes(product.id) ? 'scale(1.08)' : 'scale(1)'
                   }}
+                  className="wishlist-btn-heart"
                   title={wishlistIds.includes(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
                 >
                   <Heart 
-                    size={18} 
+                    size={20} 
                     fill={wishlistIds.includes(product.id) ? "#C97B7B" : "none"} 
                     color={wishlistIds.includes(product.id) ? "#C97B7B" : "#1F2A44"} 
+                    style={{
+                      display: 'block',
+                      flexShrink: 0,
+                      margin: 'auto',
+                      transition: 'transform 0.2s ease',
+                      filter: wishlistIds.includes(product.id) ? 'drop-shadow(0 2px 4px rgba(201, 123, 123, 0.4))' : 'none'
+                    }}
                   />
                 </button>
 
@@ -255,6 +267,8 @@ export default function ProductCatalog({
                         borderRadius: '50%',
                         width: '42px',
                         height: '42px',
+                        padding: 0,
+                        margin: 0,
                         display: 'flex',
                         alignItems: 'center',
                         justify: 'center',
@@ -262,8 +276,9 @@ export default function ProductCatalog({
                         boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                       }}
                       title="Quick View"
+                      className="quick-view-btn"
                     >
-                      <Eye size={20} />
+                      <Eye size={20} style={{ display: 'block', flexShrink: 0, margin: 'auto' }} />
                     </button>
                   </div>
                 </div>
@@ -308,11 +323,11 @@ export default function ProductCatalog({
                     </div>
 
                     <button 
-                      onClick={() => onAddToCart(product, product.sizes[0] || 'M')}
+                      onClick={() => onSelectProduct(product)}
                       className="btn-primary"
-                      style={{ padding: '8px 16px', fontSize: '0.85rem', borderRadius: '8px' }}
+                      style={{ padding: '8px 16px', fontSize: '0.85rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
-                      <ShoppingBag size={16} /> Add to Bag
+                      <Eye size={16} /> View Details
                     </button>
                   </div>
 

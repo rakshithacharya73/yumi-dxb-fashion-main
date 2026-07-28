@@ -4,7 +4,7 @@ import {
   ShoppingBag, Check, ArrowRight, MessageSquare, RefreshCw 
 } from 'lucide-react';
 
-export default function FashionAiAssistant({ products = [], onAddToCart, setActiveTab }) {
+export default function FashionAiAssistant({ products = [], onAddToCart, setActiveTab, isCartOpen = false, isCheckoutOpen = false }) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputQuery, setInputQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -14,7 +14,7 @@ export default function FashionAiAssistant({ products = [], onAddToCart, setActi
     {
       id: 1,
       sender: 'ai',
-      text: "Hello! I'm YUMI's AI Fashion & Voice Stylist. How can I assist your luxury loungewear shopping today?",
+      text: "Hello! I'm YUMI's AI Assistant and Voice. How can I assist your luxury loungewear shopping today?",
       suggestedProducts: [],
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
@@ -22,6 +22,13 @@ export default function FashionAiAssistant({ products = [], onAddToCart, setActi
 
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
+
+  // Auto-close AI assistant if Cart Drawer or Checkout Modal opens to prevent layout overlap
+  useEffect(() => {
+    if (isCartOpen || isCheckoutOpen) {
+      setIsOpen(false);
+    }
+  }, [isCartOpen, isCheckoutOpen]);
 
   // Initialize Speech Recognition API if available
   useEffect(() => {
@@ -157,14 +164,17 @@ export default function FashionAiAssistant({ products = [], onAddToCart, setActi
     }, 400);
   };
 
+  // Don't render floating widget button when checkout or cart modal is active
+  if (isCartOpen || isCheckoutOpen) return null;
+
   return (
     <>
       {/* Floating Trigger Widget Button */}
-      <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999 }}>
+      <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 8000 }}>
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            title="Open YUMI AI Fashion & Voice Assistant"
+            title="Open YUMI AI Assistant and Voice"
             style={{
               background: 'linear-gradient(135deg, #1F2A44 0%, #0F172A 100%)',
               color: '#FFFFFF', border: '2px solid #C97B7B',
@@ -174,13 +184,17 @@ export default function FashionAiAssistant({ products = [], onAddToCart, setActi
             }}
           >
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Sparkles size={20} color="#C97B7B" />
+              <img 
+                src="/yd_logo.png" 
+                alt="YUMI DXB Gold Monogram" 
+                style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+              />
               <span style={{
                 position: 'absolute', top: '-4px', right: '-4px', width: '9px', height: '9px',
                 backgroundColor: '#4CAF50', borderRadius: '50%', border: '2px solid #1F2A44'
               }}></span>
             </div>
-            <span style={{ fontWeight: 800, fontSize: '0.92rem', letterSpacing: '0.4px' }}>AI Stylist & Voice</span>
+            <span style={{ fontWeight: 800, fontSize: '0.92rem', letterSpacing: '0.4px' }}>AI Assistant and Voice</span>
           </button>
         )}
       </div>
@@ -188,7 +202,7 @@ export default function FashionAiAssistant({ products = [], onAddToCart, setActi
       {/* AI Assistant Chat Drawer / Modal */}
       {isOpen && (
         <div style={{
-          position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
+          position: 'fixed', bottom: '24px', right: '24px', zIndex: 8000,
           width: '380px', maxWidth: 'calc(100vw - 32px)', height: '570px', maxHeight: 'calc(100vh - 40px)',
           backgroundColor: '#FFFFFF', borderRadius: '24px',
           boxShadow: '0 20px 50px rgba(15, 23, 42, 0.3)', border: '1.5px solid #C97B7B',
@@ -202,14 +216,14 @@ export default function FashionAiAssistant({ products = [], onAddToCart, setActi
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{
-                width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'rgba(201,123,123,0.25)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #C97B7B'
+                width: '38px', height: '38px', borderRadius: '50%', backgroundColor: '#FFFFFF',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #C97B7B', padding: '4px'
               }}>
-                <Bot size={22} color="#C97B7B" />
+                <img src="/yd_logo.png" alt="YUMI DXB Monogram" style={{ width: '26px', height: '26px', objectFit: 'contain' }} />
               </div>
               <div>
                 <div style={{ fontWeight: 800, fontSize: '0.98rem', display: 'flex', alignItems: 'center', gap: '6px', letterSpacing: '0.3px' }}>
-                  YUMI AI Stylist <Sparkles size={14} color="#C97B7B" />
+                  AI Assistant & Voice <Sparkles size={14} color="#C97B7B" />
                 </div>
                 <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.75)' }}>
                   Online • Voice & Text Assistant
