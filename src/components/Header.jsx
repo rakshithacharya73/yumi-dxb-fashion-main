@@ -155,19 +155,20 @@ export default function Header({
 
           {/* User Account / Login Button */}
           {currentUser ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <button 
                 onClick={() => setActiveTab(currentUser.role === 'admin' ? 'admin' : 'customer-dashboard')}
                 title={currentUser.role === 'admin' ? "Open Admin Dashboard" : "View Customer Account"}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '6px',
+                  display: 'flex', alignItems: 'center', gap: '5px',
                   backgroundColor: '#1F2A44', color: '#FFF',
-                  padding: '6px 14px', borderRadius: '20px',
-                  border: '1px solid #1F2A44', cursor: 'pointer', fontWeight: 700, fontSize: '0.82rem', transition: 'all 0.2s'
+                  padding: '6px 10px', borderRadius: '20px',
+                  border: '1px solid #1F2A44', cursor: 'pointer', fontWeight: 700, fontSize: '0.8rem', transition: 'all 0.2s',
+                  whiteSpace: 'nowrap'
                 }}
               >
-                <User size={14} color="#C97B7B" />
-                <span>{currentUser.role === 'admin' ? 'Admin Dashboard' : 'My Account'}</span>
+                <User size={14} color="#C97B7B" flexShrink={0} />
+                <span>{currentUser.role === 'admin' ? 'Admin' : 'Account'}</span>
               </button>
 
               {/* Shopping Bag / Cart — Shown only when user is logged in */}
@@ -175,13 +176,13 @@ export default function Header({
                 onClick={onOpenCart}
                 style={{
                   position: 'relative', background: '#1F2A44', color: '#FFFFFF', border: 'none',
-                  padding: '6px 14px', borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-                  fontWeight: 700, fontSize: '0.82rem', transition: 'all 0.2s'
+                  padding: '6px 10px', borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px',
+                  fontWeight: 700, fontSize: '0.8rem', transition: 'all 0.2s', whiteSpace: 'nowrap'
                 }}
                 className="cart-btn"
                 title="View Shopping Bag"
               >
-                <ShoppingBag size={15} color="#FFF" />
+                <ShoppingBag size={15} color="#FFF" flexShrink={0} />
                 <span>Bag</span>
                 {cartCount > 0 && (
                   <span style={{
@@ -197,11 +198,11 @@ export default function Header({
                 onClick={onLogoutCustomer}
                 title="Log Out & Switch User"
                 style={{
-                  background: '#FFEBEE', border: 'none', borderRadius: '50%', width: '32px', height: '32px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#D32F2F'
+                  background: '#FFEBEE', border: 'none', borderRadius: '50%', width: '30px', height: '30px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#D32F2F', flexShrink: 0
                 }}
               >
-                <LogOut size={15} />
+                <LogOut size={14} />
               </button>
             </div>
           ) : (
@@ -210,11 +211,11 @@ export default function Header({
               title="Customer Sign Up / Sign In"
               style={{
                 backgroundColor: 'transparent', color: '#1F2A44', border: '1px solid rgba(31, 42, 68, 0.25)',
-                padding: '6px 14px', borderRadius: '20px', fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center',
-                gap: '6px', cursor: 'pointer', transition: 'all 0.2s'
+                padding: '6px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600, display: 'flex', alignItems: 'center',
+                gap: '5px', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap'
               }}
             >
-              <User size={15} color="#C97B7B" /> Sign Up / Sign In
+              <User size={15} color="#C97B7B" flexShrink={0} /> Sign Up / Sign In
             </button>
           )}
         </div>
