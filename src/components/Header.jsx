@@ -12,7 +12,8 @@ export default function Header({
   setSearchQuery,
   currentUser,
   onOpenCustomerLogin,
-  onLogoutCustomer
+  onLogoutCustomer,
+  onOpenWishlist
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -146,21 +147,36 @@ export default function Header({
             )}
           </div>
 
-          {/* Wishlist Header Icon */}
+          {/* Wishlist Header Button */}
           <button 
-            onClick={() => setActiveTab('collections')}
+            onClick={() => {
+              setActiveTab('collections');
+              if (onOpenWishlist) onOpenWishlist();
+            }}
             title={`Wishlist (${wishlistCount} items)`}
             style={{
-              position: 'relative', background: 'none', border: 'none', cursor: 'pointer',
-              color: wishlistCount > 0 ? '#C97B7B' : '#1A1A1A', padding: '6px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center'
+              position: 'relative',
+              backgroundColor: '#FFF0F0',
+              color: '#C97B7B',
+              border: '1px solid #F5C6C6',
+              padding: '6px 12px',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              fontWeight: 700,
+              fontSize: '0.8rem',
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap'
             }}
           >
-            <Heart size={21} fill={wishlistCount > 0 ? "#C97B7B" : "none"} color={wishlistCount > 0 ? "#C97B7B" : "#1A1A1A"} />
+            <Heart size={15} fill={wishlistCount > 0 ? "#C97B7B" : "none"} color="#C97B7B" style={{ flexShrink: 0 }} />
+            <span>Wishlist</span>
             {wishlistCount > 0 && (
               <span style={{
-                position: 'absolute', top: '0px', right: '-2px', backgroundColor: '#C97B7B', color: '#FFF',
-                borderRadius: '50%', padding: '1px 5px', fontSize: '0.68rem', fontWeight: 700
+                backgroundColor: '#C97B7B', color: '#FFF', borderRadius: '50%', padding: '1px 6px',
+                fontSize: '0.72rem', fontWeight: 800
               }}>
                 {wishlistCount}
               </span>

@@ -5,6 +5,7 @@ import Story from './components/Story';
 import ProductCatalog from './components/ProductCatalog';
 import ProductDetailModal from './components/ProductDetailModal';
 import CartDrawer from './components/CartDrawer';
+import WishlistDrawer from './components/WishlistDrawer';
 import CheckoutModal from './components/CheckoutModal';
 import OrderConfirmationModal from './components/OrderConfirmationModal';
 import CustomerLoginModal from './components/CustomerLoginModal';
@@ -25,6 +26,7 @@ export default function App() {
   // Navigation & View State
   const [activeTab, setActiveTab] = useState('home'); // 'home' | 'collections' | 'story' | 'contact' | 'admin' | 'customer-dashboard'
   const [searchQuery, setSearchQuery] = useState('');
+  const [showWishlistOnly, setShowWishlistOnly] = useState(false);
 
   // Customer Account & Admin Auth State
   const [currentUser, setCurrentUser] = useState(() => DB.getCurrentSessionCustomer());
@@ -70,9 +72,10 @@ export default function App() {
     loadCloudData();
   }, []);
 
-  // Active Modals
+  // Drawer & Modal States
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [currentConfirmationOrder, setCurrentConfirmationOrder] = useState(null);
 
@@ -135,6 +138,7 @@ export default function App() {
             setIsCustomerLoginOpen(true);
           }}
           onLogoutCustomer={handleLogoutCustomer}
+          onOpenWishlist={() => setIsWishlistOpen(true)}
         />
       )}
 
@@ -183,6 +187,8 @@ export default function App() {
                   wishlistIds={wishlistIds}
                   onToggleWishlist={handleToggleWishlist}
                   currentUser={currentUser}
+                  showWishlistOnly={showWishlistOnly}
+                  setShowWishlistOnly={setShowWishlistOnly}
                 />
                 <TestimonialsSection />
                 <Story />
@@ -215,6 +221,8 @@ export default function App() {
                   wishlistIds={wishlistIds}
                   onToggleWishlist={handleToggleWishlist}
                   currentUser={currentUser}
+                  showWishlistOnly={showWishlistOnly}
+                  setShowWishlistOnly={setShowWishlistOnly}
                 />
               </>
             )}
@@ -409,6 +417,16 @@ export default function App() {
           setIsCartOpen(false);
           setIsCheckoutOpen(true);
         }}
+      />
+
+      <WishlistDrawer 
+        isOpen={isWishlistOpen}
+        onClose={() => setIsWishlistOpen(false)}
+        wishlistIds={wishlistIds}
+        products={products}
+        onToggleWishlist={handleToggleWishlist}
+        onAddToCart={(p, s) => handleAddToCart(p, s || 'M', 1)}
+        onOpenCart={() => setIsCartOpen(true)}
       />
 
       <CheckoutModal 

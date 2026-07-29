@@ -9,7 +9,9 @@ export default function ProductCatalog({
   setSearchQuery,
   wishlistIds = [],
   onToggleWishlist,
-  currentUser
+  currentUser,
+  showWishlistOnly = false,
+  setShowWishlistOnly
 }) {
   const [selectedFabric, setSelectedFabric] = React.useState('All');
   const [sortBy, setSortBy] = React.useState('featured');
@@ -19,11 +21,12 @@ export default function ProductCatalog({
 
   // Filter & Sort
   const filteredProducts = products.filter(product => {
+    const matchesWishlist = !showWishlistOnly || wishlistIds.includes(product.id);
     const matchesFabric = selectedFabric === 'All' || product.fabric === selectedFabric;
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           product.fabric.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           product.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFabric && matchesSearch;
+    return matchesWishlist && matchesFabric && matchesSearch;
   }).sort((a, b) => {
     if (sortBy === 'price-low') return a.price - b.price;
     if (sortBy === 'price-high') return b.price - a.price;
@@ -38,14 +41,11 @@ export default function ProductCatalog({
         {/* Section Header */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <span style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#C97B7B' }}>
-            PREMIUM NIGHTWEAR & MODEST WEAR
+            {showWishlistOnly ? 'YOUR SAVED FAVORITES' : 'PREMIUM NIGHTWEAR & MODEST WEAR'}
           </span>
           <h2 style={{ fontSize: '2.4rem', color: '#1F2A44', fontWeight: 700, marginTop: '4px' }}>
-            Our Signature Collection
+            {showWishlistOnly ? 'My Wishlist Collection' : 'Our Signature Collection'}
           </h2>
-          <p style={{ color: '#666', fontSize: '1rem', marginTop: '6px' }}>
-            Thoughtfully crafted with comfort, quality, and timeless modesty in mind.
-          </p>
         </div>
 
         {/* Filters & Sorting Bar */}
@@ -63,23 +63,55 @@ export default function ProductCatalog({
           border: '1px solid #E8E2D9'
         }}>
           
-          {/* Fabric Filter Buttons */}
+          {/* Fabric & Wishlist Filter Buttons */}
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              onClick={() => {
+                if (setShowWishlistOnly) {
+                  setShowWishlistOnly(!showWishlistOnly);
+                }
+              }}
+              style={{
+                backgroundColor: showWishlistOnly ? '#C97B7B' : '#FFF0F0',
+                color: showWishlistOnly ? '#FFFFFF' : '#C97B7B',
+                border: '1.5px solid #C97B7B',
+                padding: '6px 14px',
+                borderRadius: '20px',
+                fontSize: '0.85rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.2s',
+                marginRight: '8px'
+              }}
+              title="Show only items in your wishlist"
+            >
+              <Heart size={14} fill={showWishlistOnly ? "#FFF" : "#C97B7B"} color={showWishlistOnly ? "#FFF" : "#C97B7B"} />
+              {showWishlistOnly ? 'Wishlist View Active' : `Saved Wishlist (${wishlistIds.length})`}
+            </button>
+
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1F2A44', display: 'flex', alignItems: 'center', gap: '4px', marginRight: '8px' }}>
               <Filter size={16} color="#C97B7B" /> Fabric:
             </span>
             {fabrics.map(fabric => (
               <button
                 key={fabric}
-                onClick={() => setSelectedFabric(fabric)}
+                onClick={() => {
+                  setSelectedFabric(fabric);
+                  if (showWishlistOnly && setShowWishlistOnly) {
+                    setShowWishlistOnly(false);
+                  }
+                }}
                 style={{
-                  backgroundColor: selectedFabric === fabric ? '#1F2A44' : '#F7F3EE',
-                  color: selectedFabric === fabric ? '#FFFFFF' : '#1A1A1A',
+                  backgroundColor: (!showWishlistOnly && selectedFabric === fabric) ? '#1F2A44' : '#F7F3EE',
+                  color: (!showWishlistOnly && selectedFabric === fabric) ? '#FFFFFF' : '#1A1A1A',
                   border: 'none',
                   padding: '6px 14px',
                   borderRadius: '20px',
                   fontSize: '0.85rem',
-                  fontWeight: selectedFabric === fabric ? 600 : 400,
+                  fontWeight: (!showWishlistOnly && selectedFabric === fabric) ? 600 : 400,
                   cursor: 'pointer',
                   transition: 'all 0.2s'
                 }}
@@ -121,17 +153,65 @@ export default function ProductCatalog({
 
         </div>
 
+        {/* Wishlist Active Banner */}
+        {showWishlistOnly && (
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            backgroundColor: '#FFF0F0', border: '1.5px solid #C97B7B', padding: '16px 24px',
+            borderRadius: '16px', marginBottom: '24px', flexWrap: 'wrap', gap: '12px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Heart size={22} fill="#C97B7B" color="#C97B7B" />
+              <div>
+                <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1F2A44', margin: 0 }}>
+                  Your Saved Wishlist ({filteredProducts.length} {filteredProducts.length === 1 ? 'item' : 'items'})
+                </h4>
+                <span style={{ fontSize: '0.82rem', color: '#666' }}>Showing products you've saved to your wishlist</span>
+              </div>
+            </div>
+            <button
+              onClick={() => { if (setShowWishlistOnly) setShowWishlistOnly(false); }}
+              style={{
+                backgroundColor: '#1F2A44', color: '#FFF', border: 'none',
+                padding: '8px 16px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer'
+              }}
+            >
+              Show All Products
+            </button>
+          </div>
+        )}
+
         {/* Product Grid */}
         {filteredProducts.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: '#FFF', borderRadius: '16px' }}>
-            <p style={{ fontSize: '1.2rem', color: '#666' }}>No products found matching your filter criteria.</p>
-            <button 
-              onClick={() => { setSelectedFabric('All'); setSearchQuery(''); }}
-              className="btn-secondary"
-              style={{ marginTop: '16px' }}
-            >
-              Reset Filters
-            </button>
+          <div style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: '#FFF', borderRadius: '16px', border: '1px solid #E8E2D9' }}>
+            {showWishlistOnly ? (
+              <>
+                <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#FFF0F0', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                  <Heart size={32} color="#C97B7B" fill="#C97B7B" />
+                </div>
+                <h3 style={{ fontSize: '1.4rem', color: '#1F2A44', fontWeight: 700 }}>Your Wishlist is Empty</h3>
+                <p style={{ fontSize: '0.95rem', color: '#666', marginTop: '6px', maxWidth: '450px', margin: '6px auto 20px auto' }}>
+                  You haven't saved any items to your wishlist yet. Click the heart icon on any product card to save your favorites!
+                </p>
+                <button 
+                  onClick={() => { if (setShowWishlistOnly) setShowWishlistOnly(false); setSelectedFabric('All'); setSearchQuery(''); }}
+                  className="btn-primary"
+                >
+                  Explore All Products
+                </button>
+              </>
+            ) : (
+              <>
+                <p style={{ fontSize: '1.2rem', color: '#666' }}>No products found matching your filter criteria.</p>
+                <button 
+                  onClick={() => { setSelectedFabric('All'); setSearchQuery(''); if (setShowWishlistOnly) setShowWishlistOnly(false); }}
+                  className="btn-secondary"
+                  style={{ marginTop: '16px' }}
+                >
+                  Reset Filters
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div 
