@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Search, User, LogOut, Menu, X, Sparkles, Heart, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, Search, User, LogOut, Menu, X, Sparkles, Heart } from 'lucide-react';
 import { BRAND_DETAILS } from '../data/products';
 
 export default function Header({ 
@@ -109,15 +109,29 @@ export default function Header({
           {/* Search Trigger */}
           <div style={{ position: 'relative' }}>
             {showSearch ? (
-              <div style={{ display: 'flex', alignItems: 'center', background: '#FFF', borderRadius: '20px', border: '1px solid #C97B7B', padding: '4px 12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', background: '#FFFFFF', borderRadius: '20px', border: '1.5px solid #C97B7B', padding: '4px 12px', boxShadow: '0 2px 8px rgba(201,123,123,0.15)' }}>
                 <Search size={16} color="#C97B7B" />
                 <input 
                   type="text" 
                   placeholder="Search robe, kaftan..." 
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    if (activeTab !== 'collections') {
+                      setActiveTab('collections');
+                    }
+                  }}
                   autoFocus
-                  style={{ border: 'none', outline: 'none', padding: '4px 8px', fontSize: '0.85rem', width: '130px', background: 'transparent' }}
+                  style={{ 
+                    border: 'none', 
+                    outline: 'none', 
+                    padding: '4px 8px', 
+                    fontSize: '0.88rem', 
+                    width: '160px', 
+                    background: 'transparent',
+                    color: '#1F2A44',
+                    fontWeight: 600
+                  }}
                 />
                 <X size={14} style={{ cursor: 'pointer', color: '#999' }} onClick={() => { setShowSearch(false); setSearchQuery(''); }} />
               </div>
@@ -196,13 +210,17 @@ export default function Header({
 
               <button
                 onClick={onLogoutCustomer}
-                title="Log Out & Switch User"
+                title="Sign Out"
                 style={{
-                  background: '#FFEBEE', border: 'none', borderRadius: '50%', width: '30px', height: '30px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#D32F2F', flexShrink: 0
+                  display: 'flex', alignItems: 'center', gap: '5px',
+                  backgroundColor: '#FFEBEE', color: '#C62828',
+                  padding: '6px 12px', borderRadius: '20px',
+                  border: '1px solid #FFCDD2', cursor: 'pointer', fontWeight: 700, fontSize: '0.8rem', transition: 'all 0.2s',
+                  whiteSpace: 'nowrap'
                 }}
               >
-                <LogOut size={14} />
+                <LogOut size={14} color="#C62828" flexShrink={0} />
+                <span>Sign Out</span>
               </button>
             </div>
           ) : (

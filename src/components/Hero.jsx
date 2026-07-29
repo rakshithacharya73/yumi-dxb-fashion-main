@@ -1,8 +1,10 @@
 import React from 'react';
-import { ArrowRight, ShieldCheck, Heart, Truck, Award, Star, Sparkles, CheckCircle } from 'lucide-react';
-import { BRAND_DETAILS } from '../data/products';
+import { ArrowRight, ShieldCheck, Heart, Truck, Star } from 'lucide-react';
 
-export default function Hero({ onExploreClick, onStoryClick }) {
+export default function Hero({ onExploreClick, onStoryClick, onExplore, onOpenStory }) {
+  const handleExplore = onExploreClick || onExplore;
+  const handleStory = onStoryClick || onOpenStory;
+
   return (
     <section style={{ 
       backgroundColor: '#F7F3EE', 
@@ -67,10 +69,10 @@ export default function Hero({ onExploreClick, onStoryClick }) {
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '8px' }}>
-              <button onClick={onExploreClick} className="btn-primary" style={{ padding: '16px 36px', fontSize: '1rem' }}>
+              <button onClick={handleExplore} className="btn-primary" style={{ padding: '16px 36px', fontSize: '1rem', cursor: 'pointer' }}>
                 Explore Signature Collection <ArrowRight size={18} />
               </button>
-              <button onClick={onStoryClick} className="btn-secondary" style={{ padding: '15px 30px', fontSize: '1rem' }}>
+              <button onClick={handleStory} className="btn-secondary" style={{ padding: '15px 30px', fontSize: '1rem', cursor: 'pointer' }}>
                 Read Our Story
               </button>
             </div>
@@ -136,7 +138,7 @@ export default function Hero({ onExploreClick, onStoryClick }) {
                 color: '#FFF',
                 display: 'flex',
                 alignItems: 'flex-end',
-                justify: 'space-between'
+                justifyContent: 'space-between'
               }}>
                 <div>
                   <span style={{ fontSize: '0.75rem', letterSpacing: '1.8px', textTransform: 'uppercase', color: '#F4E8E8', fontWeight: 700 }}>

@@ -18,7 +18,7 @@ import FashionAiAssistant from './components/FashionAiAssistant';
 
 import { BRAND_DETAILS } from './data/products';
 import { DB } from './services/db';
-import { MapPin, Mail, Phone, ExternalLink } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import './styles/theme.css';
 
 export default function App() {
@@ -46,6 +46,10 @@ export default function App() {
     const updated = DB.toggleWishlist(product.id, product.name);
     setWishlistIds(updated);
   };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab]);
 
   useEffect(() => {
     // Check if direct admin URL parameter exists e.g. ?admin=true or #admin
@@ -160,6 +164,8 @@ export default function App() {
             {activeTab === 'home' && (
               <>
                 <Hero 
+                  onExploreClick={() => setActiveTab('collections')}
+                  onStoryClick={() => setActiveTab('story')}
                   onExplore={() => setActiveTab('collections')}
                   onOpenStory={() => setActiveTab('story')}
                 />
@@ -424,10 +430,6 @@ export default function App() {
         <OrderConfirmationModal 
           order={currentConfirmationOrder}
           onClose={() => setCurrentConfirmationOrder(null)}
-          onViewInAdmin={() => {
-            setCurrentConfirmationOrder(null);
-            setActiveTab('admin');
-          }}
         />
       )}
 

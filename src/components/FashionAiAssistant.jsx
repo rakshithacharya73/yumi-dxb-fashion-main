@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Sparkles, Mic, MicOff, Volume2, VolumeX, Send, X, Bot, 
-  ShoppingBag, Check, ArrowRight, MessageSquare, RefreshCw 
+  Sparkles, Mic, MicOff, Volume2, VolumeX, Send, X 
 } from 'lucide-react';
 
 export default function FashionAiAssistant({ products = [], onAddToCart, setActiveTab, isCartOpen = false, isCheckoutOpen = false }) {

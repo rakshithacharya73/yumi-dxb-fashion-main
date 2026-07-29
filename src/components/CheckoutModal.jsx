@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  X, CreditCard, ShieldCheck, CheckCircle2, Truck, UserCheck, Lock, 
-  Trash2, ArrowLeft, ShoppingBag, AlertCircle, Smartphone, Building2, RefreshCw
+  X, ShieldCheck, UserCheck, Lock, 
+  Trash2, ArrowLeft, ShoppingBag, AlertCircle, RefreshCw
 } from 'lucide-react';
 import { PaymentGateway } from '../services/paymentGateway';
 import { EmailService, validateEmail } from '../services/emailService';
@@ -21,7 +21,6 @@ export default function CheckoutModal({
   const [upiId, setUpiId] = useState('');
   const [showItemSummary, setShowItemSummary] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [simulationOutcome, setSimulationOutcome] = useState('success'); // 'success' | 'failure' | 'cancelled'
   const [checkoutError, setCheckoutError] = useState('');
 
   const [formData, setFormData] = useState({

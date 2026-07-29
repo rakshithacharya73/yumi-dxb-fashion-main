@@ -30,6 +30,10 @@ export default function AdminDashboard({
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab]);
+
+  useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
     }, 1000);
@@ -237,7 +241,7 @@ export default function AdminDashboard({
               padding: '36px 28px',
               display: 'flex',
               flexDirection: 'column',
-              justify: 'flex-end',
+              justifyContent: 'flex-end',
               color: '#FFF'
             }}>
               <span className="badge-blush" style={{ width: 'fit-content', marginBottom: '8px' }}>YUMI DXB PORTAL</span>
@@ -342,7 +346,7 @@ export default function AdminDashboard({
           boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
           border: '1px solid #E8E2D9',
           display: 'flex',
-          justify: 'space-between',
+          justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '16px'
@@ -390,9 +394,9 @@ export default function AdminDashboard({
               onClick={onExitAdmin}
               className="btn-secondary"
               style={{ padding: '10px 16px', fontSize: '0.85rem', backgroundColor: '#1F2A44', color: '#FFF', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '30px' }}
-              title="Sign Out of Admin & Return to Storefront Sign In Modal"
+              title="Sign Out of Admin Portal"
             >
-              <LogOut size={15} color="#C97B7B" /> Sign In / Storefront
+              <LogOut size={15} color="#C97B7B" /> Sign Out
             </button>
           </div>
         </div>
@@ -1134,7 +1138,7 @@ export default function AdminDashboard({
             borderTop: '1px solid rgba(255,255,255,0.1)',
             paddingTop: '18px',
             display: 'flex',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '12px',

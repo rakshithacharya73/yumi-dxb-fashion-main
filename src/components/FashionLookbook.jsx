@@ -1,7 +1,7 @@
 import React from 'react';
-import { Sparkles, ArrowUpRight } from 'lucide-react';
 
-export default function FashionLookbook({ onCategorySelect }) {
+export default function FashionLookbook({ onCategorySelect, onSelectCategory }) {
+  const handleCategorySelect = onCategorySelect || onSelectCategory;
   const lookbookItems = [
     {
       id: 1,
@@ -59,7 +59,7 @@ export default function FashionLookbook({ onCategorySelect }) {
           {lookbookItems.map((item) => (
             <div 
               key={item.id}
-              onClick={() => onCategorySelect && onCategorySelect(item.tag)}
+              onClick={() => handleCategorySelect && handleCategorySelect(item.tag)}
               style={{
                 position: 'relative',
                 borderRadius: '20px',
@@ -82,25 +82,34 @@ export default function FashionLookbook({ onCategorySelect }) {
               <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'linear-gradient(to top, rgba(31,42,68,0.9) 0%, rgba(31,42,68,0.2) 60%, transparent 100%)',
+                background: 'linear-gradient(to top, rgba(31,42,68,0.92) 0%, rgba(31,42,68,0.4) 45%, transparent 75%)',
                 padding: '24px',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between',
+                justifyContent: 'flex-end',
                 color: '#FFF'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ backgroundColor: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                <div>
+                  <span style={{ 
+                    backgroundColor: 'rgba(255,255,255,0.22)', 
+                    backdropFilter: 'blur(8px)', 
+                    padding: '4px 12px', 
+                    borderRadius: '20px', 
+                    fontSize: '0.72rem', 
+                    fontWeight: 700, 
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    display: 'inline-block',
+                    marginBottom: '8px'
+                  }}>
                     {item.tag}
                   </span>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#FFF', color: '#1F2A44', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <ArrowUpRight size={16} />
+                  <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>
+                    {item.subtitle}
                   </div>
-                </div>
-
-                <div>
-                  <div style={{ fontSize: '0.78rem', color: '#F4E8E8', textTransform: 'uppercase', letterSpacing: '1px' }}>{item.subtitle}</div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginTop: '2px', color: '#FFF' }}>{item.title}</h3>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginTop: '2px', color: '#FFF', lineHeight: 1.3 }}>
+                    {item.title}
+                  </h3>
                 </div>
               </div>
 

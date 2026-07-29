@@ -61,7 +61,7 @@ export default function TestimonialsSection() {
                 border: '1px solid #E8E2D9',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 position: 'relative'
               }}
               className="product-card"

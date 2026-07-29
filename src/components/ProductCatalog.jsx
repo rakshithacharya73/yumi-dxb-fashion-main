@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye, ShoppingBag, Star, Filter, Search, Sparkles, Heart } from 'lucide-react';
+import { Eye, Star, Filter, Heart } from 'lucide-react';
 
 export default function ProductCatalog({ 
   products, 
@@ -54,7 +54,7 @@ export default function ProductCatalog({
           flexWrap: 'wrap',
           gap: '16px',
           alignItems: 'center',
-          justify: 'space-between',
+          justifyContent: 'space-between',
           backgroundColor: '#FFFFFF',
           padding: '16px 24px',
           borderRadius: '16px',
@@ -199,7 +199,7 @@ export default function ProductCatalog({
                     margin: 0,
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'center',
+                    justifyContent: 'center',
                     cursor: 'pointer',
                     zIndex: 4,
                     boxShadow: wishlistIds.includes(product.id) ? '0 6px 16px rgba(201, 123, 123, 0.4)' : '0 4px 12px rgba(0,0,0,0.12)',
@@ -253,7 +253,7 @@ export default function ProductCatalog({
                     backgroundColor: 'rgba(31, 42, 68, 0.25)',
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'center',
+                    justifyContent: 'center',
                     gap: '12px',
                     opacity: 0,
                     transition: 'opacity 0.3s ease'
@@ -271,7 +271,7 @@ export default function ProductCatalog({
                         margin: 0,
                         display: 'flex',
                         alignItems: 'center',
-                        justify: 'center',
+                        justifyContent: 'center',
                         cursor: 'pointer',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                       }}

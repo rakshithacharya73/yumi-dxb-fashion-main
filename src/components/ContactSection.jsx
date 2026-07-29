@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, Send, Sparkles, CheckCircle2, MapPin, AlertCircle } from 'lucide-react';
+import { Mail, Send, Sparkles, CheckCircle2, MapPin, AlertCircle } from 'lucide-react';
 import { BRAND_DETAILS } from '../data/products';
 import { DB } from '../services/db';
 import { EmailService, validateEmail } from '../services/emailService';

@@ -40,7 +40,7 @@ export default function CartDrawer({
           borderBottom: '1px solid #E8E2D9',
           display: 'flex',
           alignItems: 'center',
-          justify: 'space-between',
+          justifyContent: 'space-between',
           backgroundColor: '#F7F3EE'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

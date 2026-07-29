@@ -1,8 +1,7 @@
 import React from 'react';
-import { CheckCircle2, PackageCheck, ArrowRight, ShieldCheck, Home, Eye, Download } from 'lucide-react';
-import { BRAND_DETAILS } from '../data/products';
+import { CheckCircle2, Download, X } from 'lucide-react';
 
-export default function OrderConfirmationModal({ order, onClose, onViewInAdmin }) {
+export default function OrderConfirmationModal({ order, onClose }) {
   if (!order) return null;
 
   const handleDownloadReceipt = () => {
@@ -177,6 +176,21 @@ export default function OrderConfirmationModal({ order, onClose, onViewInAdmin }
         padding: '40px 36px'
       }} className="animate-fade-in">
         
+        {/* Top Right Close Button */}
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute', top: '20px', right: '20px',
+            backgroundColor: '#F7F3EE', border: '1px solid #E8E2D9',
+            borderRadius: '50%', width: '36px', height: '36px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: '#1F2A44', transition: 'all 0.2s', zIndex: 10
+          }}
+          title="Close Order Confirmation"
+        >
+          <X size={18} />
+        </button>
+        
         {/* Success Header */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div style={{
@@ -289,27 +303,6 @@ export default function OrderConfirmationModal({ order, onClose, onViewInAdmin }
           >
             <Download size={18} /> Download Tax Receipt (PDF)
           </button>
-        </div>
-
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          <button 
-            onClick={onClose} 
-            className="btn-secondary" 
-            style={{ flex: 1, padding: '14px' }}
-          >
-            <Home size={18} /> Return to Storefront
-          </button>
-          
-          {onViewInAdmin && (
-            <button 
-              onClick={onViewInAdmin} 
-              className="btn-secondary" 
-              style={{ flex: 1, padding: '14px' }}
-            >
-              <Eye size={18} /> View in Admin Dashboard
-            </button>
-          )}
         </div>
 
       </div>

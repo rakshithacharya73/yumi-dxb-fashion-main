@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Star, ShoppingBag, ShieldCheck, RefreshCw, Sparkles, Check, Info, Heart } from 'lucide-react';
+import { X, Star, ShoppingBag, Check, Info, Heart } from 'lucide-react';
 
 export default function ProductDetailModal({ 
   product, 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Package, MapPin, Phone, Mail, LogOut, ShoppingBag, Clock, CheckCircle2, Truck, ShieldCheck, ArrowRight, Edit2, Sparkles, Download, XCircle } from 'lucide-react';
+import { User, Package, MapPin, Phone, Mail, ShoppingBag, Clock, CheckCircle2, Truck, ShieldCheck, ArrowRight, Edit2, Sparkles, Download, XCircle } from 'lucide-react';
 import { DB } from '../services/db';
 
 export default function CustomerDashboard({ 
@@ -18,6 +18,10 @@ export default function CustomerDashboard({
   });
   const [msg, setMsg] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab]);
 
   const handleCancelOrder = async (orderId) => {
     if (window.confirm(`Are you sure you want to cancel Order #${orderId}?`)) {
@@ -239,7 +243,7 @@ export default function CustomerDashboard({
             </div>
 
             <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2.2rem', fontWeight: 700, margin: '4px 0' }}>
-              Welcome Back, {currentUser.name}!
+              Welcome Back, {currentUser.name}
             </h1>
 
             <div style={{ display: 'flex', gap: '16px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', marginTop: '8px', flexWrap: 'wrap' }}>
@@ -261,14 +265,6 @@ export default function CustomerDashboard({
               style={{ padding: '12px 20px', fontSize: '0.9rem' }}
             >
               <ShoppingBag size={16} /> Explore Collections
-            </button>
-            
-            <button 
-              onClick={onLogout}
-              className="btn-secondary"
-              style={{ padding: '12px 18px', fontSize: '0.9rem', backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFF', border: '1px solid rgba(255,255,255,0.2)' }}
-            >
-              <LogOut size={16} /> Sign Out
             </button>
           </div>
         </div>
@@ -689,7 +685,7 @@ export default function CustomerDashboard({
             borderTop: '1px solid rgba(255,255,255,0.1)',
             paddingTop: '18px',
             display: 'flex',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '12px',
